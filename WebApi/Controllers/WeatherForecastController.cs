@@ -11,11 +11,11 @@ namespace WebApi.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        protected readonly IConfiguration configuration;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(IConfiguration configuration)
         {
-            _logger = logger;
+            this.configuration = configuration;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -25,7 +25,7 @@ namespace WebApi.Controllers
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                 TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                Summary = configuration.GetConnectionString("DbCS")
             })
             .ToArray();
         }
