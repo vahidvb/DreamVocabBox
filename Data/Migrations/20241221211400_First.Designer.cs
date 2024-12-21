@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DreamVocabBoxContext))]
-    [Migration("20241221210654_First")]
+    [Migration("20241221211400_First")]
     partial class First
     {
         /// <inheritdoc />
@@ -113,7 +113,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Words");
+                    b.ToTable("Vocabularies");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,11 +1,4 @@
-﻿using Entities.Enum.Artists;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Entities.Model
+﻿namespace Entities.Model
 {
     public class Vocabulary : BaseModel<Guid>
     {

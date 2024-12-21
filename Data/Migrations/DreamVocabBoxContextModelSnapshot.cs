@@ -110,7 +110,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Words");
+                    b.ToTable("Vocabularies");
                 });
 #pragma warning restore 612, 618
         }

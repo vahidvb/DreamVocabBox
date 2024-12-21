@@ -34,7 +34,7 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Words",
+                name: "Vocabularies",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -51,7 +51,7 @@ namespace Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Words", x => x.Id);
+                    table.PrimaryKey("PK_Vocabularies", x => x.Id);
                 });
         }
 
@@ -62,7 +62,7 @@ namespace Data.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Words");
+                name: "Vocabularies");
         }
     }
 }
