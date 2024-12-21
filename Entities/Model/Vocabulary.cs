@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Entities.Model
 {
-    public class Word : BaseModel<Guid>
+    public class Vocabulary : BaseModel<Guid>
     {
         public required int UserId { get; set; }
-        public required string Value { get; set; }
+        public required string Word { get; set; }
         public required string Meaning { get; set; }
         public string? Example { get; set; }
         public string? Description { get; set; }

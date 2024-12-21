@@ -39,7 +39,7 @@ namespace Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Word = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Meaning = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Example = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),

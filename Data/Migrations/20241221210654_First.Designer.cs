@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DreamVocabBoxContext))]
-    [Migration("20241221203000_First")]
+    [Migration("20241221210654_First")]
     partial class First
     {
         /// <inheritdoc />
@@ -73,7 +73,7 @@ namespace Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Entities.Model.Word", b =>
+            modelBuilder.Entity("Entities.Model.Vocabulary", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,7 +107,7 @@ namespace Data.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("Word")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -70,7 +70,7 @@ namespace Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Entities.Model.Word", b =>
+            modelBuilder.Entity("Entities.Model.Vocabulary", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,7 +104,7 @@ namespace Data.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("Word")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
