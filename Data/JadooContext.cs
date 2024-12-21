@@ -1,4 +1,4 @@
-﻿using Entities.Model.Artists;
+﻿using Entities.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -8,7 +8,8 @@ namespace Data
         public JadooContext(DbContextOptions<JadooContext> options) : base(options)
         {
         }
-        public DbSet<Artist> Questions { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Word> Words { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
