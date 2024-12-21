@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data
 {
-    public class JadooContext : BaseContext
+    public class DreamVocabBoxContext : BaseContext
     {
-        public JadooContext(DbContextOptions<JadooContext> options) : base(options)
+        public DreamVocabBoxContext(DbContextOptions<DreamVocabBoxContext> options) : base(options)
         {
         }
         public DbSet<User> Users { get; set; }

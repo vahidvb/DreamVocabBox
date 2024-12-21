@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
-    [DbContext(typeof(JadooContext))]
-    partial class JadooContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DreamVocabBoxContext))]
+    partial class DreamVocabBoxContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

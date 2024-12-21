@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
-    [DbContext(typeof(JadooContext))]
+    [DbContext(typeof(DreamVocabBoxContext))]
     [Migration("20241221203000_First")]
     partial class First
     {

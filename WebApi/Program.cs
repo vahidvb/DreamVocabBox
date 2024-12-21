@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddDbContext<JadooContext>(options =>
+builder.Services.AddDbContext<DreamVocabBoxContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DbCS")), ServiceLifetime.Transient);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

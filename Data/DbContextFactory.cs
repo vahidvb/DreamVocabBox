@@ -5,18 +5,18 @@ using System.IO;
 
 namespace Data
 {
-    public class DbContextFactory : IDesignTimeDbContextFactory<JadooContext>
+    public class DbContextFactory : IDesignTimeDbContextFactory<DreamVocabBoxContext>
     {
-        public JadooContext CreateDbContext(string[] args)
+        public DreamVocabBoxContext CreateDbContext(string[] args)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                   .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                   .AddJsonFile("appsettings.json")
                   .Build();
 
-            var builder = new DbContextOptionsBuilder<JadooContext>();
+            var builder = new DbContextOptionsBuilder<DreamVocabBoxContext>();
             builder.UseSqlServer(configuration.GetConnectionString("DbCS") ?? "");
-            return new JadooContext(builder.Options);
+            return new DreamVocabBoxContext(builder.Options);
         }
     }
 }
