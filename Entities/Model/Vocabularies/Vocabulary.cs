@@ -1,4 +1,4 @@
-﻿namespace Entities.Model
+﻿namespace Entities.Model.Vocabularies
 {
     public class Vocabulary : BaseModel<Guid>
     {
@@ -9,5 +9,6 @@
         public string? Description { get; set; }
         public int SeenCount { get; set; }
         public DateTime LastSeenDateTime { get; set; }
+        public int BoxNumber { get; set; }
     }
 }

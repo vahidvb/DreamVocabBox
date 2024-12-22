@@ -1,4 +1,5 @@
-﻿using Entities.Model;
+﻿using Entities.Model.Users;
+using Entities.Model.Vocabularies;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data

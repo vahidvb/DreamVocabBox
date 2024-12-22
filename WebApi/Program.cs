@@ -1,5 +1,6 @@
 using Data;
 using Microsoft.EntityFrameworkCore;
+using Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DreamVocabBoxContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DbCS")), ServiceLifetime.Transient);
+builder.Services.AddCustomService();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
