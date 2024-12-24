@@ -67,31 +67,34 @@ namespace Data
         public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
         {
             UpdateLastChangeDate(entity);
-
             return base.Update(entity);
         }
 
         public override int SaveChanges()
         {
             _cleanString();
+            UpdateLastChangeDateOnEntities();
             return base.SaveChanges();
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
             _cleanString();
+            UpdateLastChangeDateOnEntities();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             _cleanString();
+            UpdateLastChangeDateOnEntities();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             _cleanString();
+            UpdateLastChangeDateOnEntities();
             return base.SaveChangesAsync(cancellationToken);
         }
 
@@ -122,6 +125,21 @@ namespace Data
                 }
             }
         }
+        private void UpdateLastChangeDateOnEntities()
+        {
+            var changedBaseEntities = ChangeTracker.Entries()
+                .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
 
+            foreach (var item in changedBaseEntities)
+            {
+                if (item.Entity == null) continue;
+
+                var property = item.Entity.GetType().GetProperty("LastChangeDate");
+                if (property != null)
+                {
+                    property.SetValue(item.Entity, DateTime.Now);
+                }
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Api;
+using System;
 using System.Net;
 
 namespace Common
@@ -6,10 +7,10 @@ namespace Common
     public class AppException : Exception
     {
         public HttpStatusCode HttpStatusCode { get; set; }
-        public Enum _ApiStatusCodes;
+        public ApiResultStatusCode _ApiStatusCodes;
         public object AdditionalData { get; set; }
 
-        public AppException(Enum ApiStatusCodes, string message = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK, Exception exception = null, object additionalData = null)
+        public AppException(ApiResultStatusCode ApiStatusCodes, string message = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK, Exception exception = null, object additionalData = null)
             : base(message, exception)
         {
             _ApiStatusCodes = ApiStatusCodes;

@@ -7,18 +7,17 @@ namespace Common.Api
     public class ApiResult
     {
         public bool IsSuccess { get; set; }
-        public Enum StatusCode { get; set; }
+        public int StatusCode { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
-        public ApiResult(bool isSuccess, Enum statusCode, string message = null)
+        public ApiResult(ApiResultStatusCode statusCode, string message = null)
         {
-            IsSuccess = isSuccess;
-            StatusCode = statusCode;
-            Message = message ?? statusCode.ToDisplay();
+            IsSuccess = statusCode.GetCustomStatus();
+            StatusCode = (int)statusCode;
+            Message = message ?? statusCode.GetCustomDisplayName();
         }
-
     }
 
     public class ApiResult<TData> : ApiResult
@@ -27,11 +26,10 @@ namespace Common.Api
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TData Data { get; set; }
 
-        public ApiResult(bool isSuccess, Enum statusCode, TData data, string message = null)
-            : base(isSuccess, statusCode, message)
+        public ApiResult(ApiResultStatusCode statusCode, TData data, string message = null)
+            : base(statusCode, message)
         {
             Data = data;
         }
-
     }
 }

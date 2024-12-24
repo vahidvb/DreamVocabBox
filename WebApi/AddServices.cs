@@ -1,13 +1,18 @@
-﻿using Business.Vocabularies;
+﻿using Business.Users;
+using Business.Vocabularies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Service.Vocabularies;
+using System.Text;
 
 namespace Service
 {
     public static class AddServices
     {
-        public static void AddCustomService(this IServiceCollection services)
+        public static void AddCustomServices(this IServiceCollection services)
         {
             services.AddScoped<IVocabularyService, BVocabulary>();
+            services.AddScoped<IUserService, BUser>();
         }
 
     }
