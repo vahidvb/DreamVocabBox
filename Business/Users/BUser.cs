@@ -26,7 +26,7 @@ namespace Business.Users
             this.db = db;
             this.configuration = configuration;
         }
-        public async Task<User> RegisterAsync(RegisterRequest request)
+        public async Task<string> RegisterAsync(RegisterRequest request)
         {
             request.NickName = request.NickName.Trim();
             request.UserName = request.UserName.Trim();
@@ -61,7 +61,7 @@ namespace Business.Users
             await db.Users.AddAsync(user);
             await db.SaveChangesAsync();
 
-            return user;
+            return GenerateToken(user);
         }
 
         public async Task<string> LoginAsync(LoginRequest request)
@@ -71,12 +71,18 @@ namespace Business.Users
             if (user == null)
                 throw new AppException(ApiResultStatusCode.UserNotExist);
 
-            if (!(request.Password == user.PasswordHash) && (user.PasswordHash != SecurityHelper.HashPassword(request.Password)))
+            if (!(request.Password == user.PasswordHash))
                 throw new AppException(ApiResultStatusCode.WrongPassword);
 
             user.LastLoginDate = DateTime.Now;
             await db.SaveChangesAsync();
+            return GenerateToken(user);
+        }
 
+        public async Task<bool> IsUserExist(string userName) => await db.Users.AnyAsync(u => u.UserName == userName);
+
+        private string GenerateToken(User user)
+        {
             var key = Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]);
             var SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
 
@@ -116,10 +122,6 @@ namespace Business.Users
 
             return jwt;
         }
-
-        public async Task<bool> IsUserExist(string userName) => await db.Users.AnyAsync(u => u.UserName == userName);
-
-
 
     }
 }
