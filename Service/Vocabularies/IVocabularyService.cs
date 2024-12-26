@@ -5,6 +5,9 @@ namespace Service.Vocabularies
 {
     public interface IVocabularyService
     {
-        Task<VocabularyPagination> GetVocabulariesPagination(GetVocabularyPaginationForm form);
+        Task<VocabularyPagination> GetVocabulariesPagination(FGetVocabularyPagination form);
+        Task AddVocabulary(FAddEditVocabulary form);
+        Task EditVocabulary(FAddEditVocabulary form);
+        Task RemoveVocabulary(FRemoveVocabulary form);
     }
 }

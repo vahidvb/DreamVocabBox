@@ -1,10 +1,6 @@
-﻿using Common.Extensions;
-using Entities.Model.Users;
-using Microsoft.AspNetCore.Mvc;
-using Service.Vocabularies;
-using Entities.Form;
+﻿using Common.Api;
 using Entities.Form.Users;
-using Common.Api;
+using Microsoft.AspNetCore.Mvc;
 namespace WebApi.Controllers
 {
     [Route("[controller]/[action]")]

@@ -12,7 +12,7 @@ namespace Common.Api
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
-        public ApiResult(ApiResultStatusCode statusCode, string message = null)
+        public ApiResult(ApiResultStatusCode statusCode = ApiResultStatusCode.Success, string message = null)
         {
             IsSuccess = statusCode.GetCustomStatus();
             StatusCode = (int)statusCode;
@@ -26,7 +26,7 @@ namespace Common.Api
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TData Data { get; set; }
 
-        public ApiResult(ApiResultStatusCode statusCode, TData data, string message = null)
+        public ApiResult(ApiResultStatusCode statusCode = ApiResultStatusCode.Success, TData data, string message = null)
             : base(statusCode, message)
         {
             Data = data;

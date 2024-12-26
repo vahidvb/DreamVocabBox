@@ -1,9 +1,7 @@
 ﻿using Common.Api;
-using Common.Extensions;
 using Entities.Form.Vocabularies;
 using Entities.Response.Vocabularies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Vocabularies;
 
@@ -22,7 +20,31 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ApiResult<VocabularyPagination>> GetVocabularies(GetVocabularyPaginationForm form)
+        public async Task<ApiResult> RemoveVocabulary(FRemoveVocabulary form)
+        {
+            form.UserId = CurrentUser.Id;
+            await service.RemoveVocabulary(form);
+            return new ApiResult();
+        }
+
+        [HttpPost]
+        public async Task<ApiResult> AddVocabulary(FAddEditVocabulary form)
+        {
+            form.UserId = CurrentUser.Id;
+            await service.AddVocabulary(form);
+            return new ApiResult();
+        }
+
+        [HttpPost]
+        public async Task<ApiResult> EditVocabulary(FAddEditVocabulary form)
+        {
+            form.UserId = CurrentUser.Id;
+            await service.EditVocabulary(form);
+            return new ApiResult();
+        }
+
+        [HttpPost]
+        public async Task<ApiResult<VocabularyPagination>> GetVocabularies(FGetVocabularyPagination form)
         {
             form.UserId = CurrentUser.Id;
             return new ApiResult<VocabularyPagination>(ApiResultStatusCode.Success, await service.GetVocabulariesPagination(form));
