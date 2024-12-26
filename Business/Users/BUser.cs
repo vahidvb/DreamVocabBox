@@ -71,7 +71,7 @@ namespace Business.Users
             if (user == null)
                 throw new AppException(ApiResultStatusCode.UserNotExist);
 
-            if (!(request.Password == user.PasswordHash))
+            if (user.PasswordHash != SecurityHelper.HashPassword(request.Password))
                 throw new AppException(ApiResultStatusCode.WrongPassword);
 
             user.LastLoginDate = DateTime.Now;
