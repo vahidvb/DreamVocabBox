@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Api;
+using Common.Extensions;
 using Data;
 using Entities.Form.Vocabularies;
 using Entities.Model.Vocabularies;
@@ -33,8 +34,7 @@ namespace Business.Vocabularies
                 SeenCount = 1,
             };
 
-
-            var exist = await DataBase.Vocabularies.AnyAsync(x => x.UserId == info.UserId && x.Word.Equals(info.Word, StringComparison.InvariantCultureIgnoreCase));
+            var exist = await DataBase.Vocabularies.AnyAsync(x => x.UserId == info.UserId && x.Word.ToLower() == info.Word.ToLower());
             if (exist)
                 throw new AppException(ApiResultStatusCode.EntityExists);
 
@@ -43,7 +43,11 @@ namespace Business.Vocabularies
         }
         public async Task EditVocabulary(FAddEditVocabulary form)
         {
-            var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.Id);
+            var exist = await DataBase.Vocabularies.AnyAsync(x => x.Id != form.Id.ToGuid() && x.UserId == form.UserId && x.Word.ToLower() == form.Word.ToLower());
+            if (exist)
+                throw new AppException(ApiResultStatusCode.EntityExists);
+
+            var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.Id.ToGuid());
 
             if (vocabulary == null)
                 throw new AppException(ApiResultStatusCode.EntityNotFound);
@@ -54,7 +58,7 @@ namespace Business.Vocabularies
 
             vocabulary = new Vocabulary()
             {
-                Id = form.Id,
+                Id = form.Id.ToGuid(),
                 Word = form.Word,
                 Meaning = form.Meaning,
                 UserId = form.UserId,
@@ -96,7 +100,7 @@ namespace Business.Vocabularies
 
         public async Task RemoveVocabulary(FRemoveVocabulary form)
         {
-            var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.VocabularyId);
+            var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.VocabularyId.ToGuid());
 
             if (vocabulary == null)
                 throw new AppException(ApiResultStatusCode.EntityNotFound);

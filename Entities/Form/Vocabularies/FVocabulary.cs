@@ -11,7 +11,8 @@ namespace Entities.Form.Vocabularies
     }
     public class FAddEditVocabulary
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
+        [JsonIgnore]
         public int UserId { get; set; }
         public string Word { get; set; }
         public string Meaning { get; set; }
@@ -20,7 +21,8 @@ namespace Entities.Form.Vocabularies
     }
     public class FRemoveVocabulary
     {
-        public required Guid VocabularyId { get; set; }
+        public required string VocabularyId { get; set; }
+        [JsonIgnore]
         public required int UserId { get; set; }
     }
 }
