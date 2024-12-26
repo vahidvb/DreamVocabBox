@@ -14,9 +14,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ApiResult<string>> Register([FromBody] RegisterRequest request) => new ApiResult<string>(ApiResultStatusCode.RegistrationCompleted, await service.RegisterAsync(request));
+        public async Task<ApiResult<string>> Register([FromBody] RegisterRequest request) => new ApiResult<string>(await service.RegisterAsync(request), ApiResultStatusCode.RegistrationCompleted);
 
         [HttpPost]
-        public async Task<ApiResult<string>> Login([FromBody] LoginRequest request) => new ApiResult<string>(ApiResultStatusCode.LoginCompleted, await service.LoginAsync(request));
+        public async Task<ApiResult<string>> Login([FromBody] LoginRequest request) => new ApiResult<string>(await service.LoginAsync(request), ApiResultStatusCode.LoginCompleted);
     }
 }

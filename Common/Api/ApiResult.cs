@@ -26,7 +26,7 @@ namespace Common.Api
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TData Data { get; set; }
 
-        public ApiResult(ApiResultStatusCode statusCode = ApiResultStatusCode.Success, TData data, string message = null)
+        public ApiResult(TData data, ApiResultStatusCode statusCode = ApiResultStatusCode.Success, string message = null)
             : base(statusCode, message)
         {
             Data = data;

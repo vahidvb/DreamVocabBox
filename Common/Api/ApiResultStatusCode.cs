@@ -72,5 +72,14 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("Password cannot contain spaces")]
         PasswordHasSpace = 22,
+
+        [CustomDisplayStatusAttribute("Vocabulary added successfuly", true)]
+        VocabularyAdded = 23,
+
+        [CustomDisplayStatusAttribute("Vocabulary updated successfuly", true)]
+        VocabularyUpdated = 24,
+
+        [CustomDisplayStatusAttribute("Vocabulary removed successfuly", true)]
+        VocabularyRemoved = 25,
     }
 }

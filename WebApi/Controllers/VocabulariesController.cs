@@ -24,7 +24,7 @@ namespace WebApi.Controllers
         {
             form.UserId = CurrentUser.Id;
             await service.RemoveVocabulary(form);
-            return new ApiResult();
+            return new ApiResult(ApiResultStatusCode.VocabularyRemoved);
         }
 
         [HttpPost]
@@ -32,7 +32,7 @@ namespace WebApi.Controllers
         {
             form.UserId = CurrentUser.Id;
             await service.AddVocabulary(form);
-            return new ApiResult();
+            return new ApiResult(ApiResultStatusCode.VocabularyAdded);
         }
 
         [HttpPost]
@@ -40,14 +40,14 @@ namespace WebApi.Controllers
         {
             form.UserId = CurrentUser.Id;
             await service.EditVocabulary(form);
-            return new ApiResult();
+            return new ApiResult(ApiResultStatusCode.VocabularyUpdated);
         }
 
         [HttpPost]
         public async Task<ApiResult<VocabularyPagination>> GetVocabularies(FGetVocabularyPagination form)
         {
             form.UserId = CurrentUser.Id;
-            return new ApiResult<VocabularyPagination>(ApiResultStatusCode.Success, await service.GetVocabulariesPagination(form));
+            return new ApiResult<VocabularyPagination>(await service.GetVocabulariesPagination(form));
         }
     }
 }

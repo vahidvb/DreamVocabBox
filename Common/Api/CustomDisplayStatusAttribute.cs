@@ -17,7 +17,6 @@ namespace Common.Api
     }
     public static class OperationStatusExtensions
     {
-        // Get the Display Name for an enum value
         public static string GetCustomDisplayName(this ApiResultStatusCode status)
         {
             var field = status.GetType().GetField(status.ToString());
@@ -25,7 +24,6 @@ namespace Common.Api
             return attribute?.Name ?? status.ToString();
         }
 
-        // Get the Status (Success or not) for an enum value
         public static bool GetCustomStatus(this Enum status)
         {
             var field = status.GetType().GetField(status.ToString());
