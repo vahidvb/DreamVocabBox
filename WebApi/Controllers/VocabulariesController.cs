@@ -44,10 +44,13 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ApiResult<VocabularyPagination>> GetVocabularies(FGetVocabularyPagination form)
+        public async Task<ApiResult<RVocabularyPagination>> GetVocabularies(FGetVocabularyPagination form)
         {
             form.UserId = CurrentUser.Id;
-            return new ApiResult<VocabularyPagination>(await service.GetVocabulariesPagination(form));
+            return new ApiResult<RVocabularyPagination>(await service.GetVocabulariesPagination(form));
         }
+
+        [HttpPost]
+        public async Task<ApiResult<List<RVocabularyBox>>> GetVocabulariesBoxes() => new ApiResult<List<RVocabularyBox>>(await service.GetVocabulariesBoxes(CurrentUser.Id));
     }
 }

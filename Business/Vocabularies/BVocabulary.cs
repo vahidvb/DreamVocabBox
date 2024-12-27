@@ -76,7 +76,7 @@ namespace Business.Vocabularies
             await DataBase.SaveChangesAsync();
         }
 
-        public async Task<VocabularyPagination> GetVocabulariesPagination(FGetVocabularyPagination form)
+        public async Task<RVocabularyPagination> GetVocabulariesPagination(FGetVocabularyPagination form)
         {
             var totalCount = await DataBase.Vocabularies.CountAsync(x => x.UserId == form.UserId);
 
@@ -88,7 +88,7 @@ namespace Business.Vocabularies
 
             var totalPage = (int)Math.Ceiling((double)totalCount / form.ListLength);
 
-            return new VocabularyPagination
+            return new RVocabularyPagination
             {
                 Items = vocabularies,
                 CurrentPage = (form.ListPosition / form.ListLength) + 1,
@@ -97,7 +97,23 @@ namespace Business.Vocabularies
                 TotalItem = totalCount
             };
         }
+        public async Task<List<RVocabularyBox>> GetVocabulariesBoxes(int UserId)
+        {
+            var result = new List<RVocabularyBox>();
+            for (int BoxNumber = 1; BoxNumber <= 7; BoxNumber++)
+            {
+                var all = await DataBase.Vocabularies.Where(x => x.UserId == UserId && x.BoxNumber == BoxNumber).ToListAsync();
 
+                result.Add(new RVocabularyBox
+                {
+                    AllCount = all.Count(),
+                    BoxNumber = BoxNumber,
+                    CheckedCount = all.Count(x => x.LastSeenDateTime.Date == DateTime.Now.Date),
+                    UnCheckedCount = all.Count(x => x.LastSeenDateTime.Date < DateTime.Now.Date),
+                });
+            }
+            return result;
+        }
         public async Task RemoveVocabulary(FRemoveVocabulary form)
         {
             var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.VocabularyId.ToGuid());

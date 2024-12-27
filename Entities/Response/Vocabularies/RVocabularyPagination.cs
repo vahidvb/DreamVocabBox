@@ -2,7 +2,7 @@
 
 namespace Entities.Response.Vocabularies
 {
-    public class VocabularyPagination : Pagination<Vocabulary>
+    public class RVocabularyPagination : Pagination<Vocabulary>
     {
     }
 }
