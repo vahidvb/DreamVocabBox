@@ -75,7 +75,7 @@ namespace Business.Users
             return GenerateToken(user);
         }
 
-        public async Task<bool> IsUserExist(string userName) => await db.Users.AnyAsync(u => u.UserName == userName);
+        public async Task<bool> IsUserExist(string userName) => await db.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());
 
         private string GenerateToken(User user)
         {
