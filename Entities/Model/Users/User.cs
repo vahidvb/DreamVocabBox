@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Model.Users
 {
@@ -15,10 +16,12 @@ namespace Entities.Model.Users
         [StringLength(500)]
         public string PasswordHash { get; set; }
         public string Role { get; set; }
+        public int Avatar { get; set; }
         public User()
         {
             SecurityStamp = Guid.NewGuid();
             Role = "User";
+            Avatar = 1;
         }
 
     }

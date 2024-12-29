@@ -4,6 +4,7 @@ using Common.Utilities;
 using Data;
 using Entities.Form.Users;
 using Entities.Model.Users;
+using Entities.Response.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -13,22 +14,47 @@ using System.Text;
 
 namespace Business.Users
 {
-    public class BUser : IUserService
+    public class BUser : BaseBusiness , IUserService
     {
-        private readonly DreamVocabBoxContext db;
-        private readonly IConfiguration configuration;
-        public BUser(DreamVocabBoxContext db, IConfiguration configuration)
+        public BUser(DreamVocabBoxContext db, IConfiguration configuration) : base(db, configuration)
         {
-            this.db = db;
-            this.configuration = configuration;
         }
-        public async Task<string> RegisterAsync(RegisterRequest request)
+
+        public async Task<RUserLogin> RegisterAsGuestAsync()
+        {
+            Random random = new Random();
+            int randomPassword = random.Next(1000, 9999);
+
+            var user = new User
+            {
+                UserName = "",
+                Email = "",
+                NickName = GuestNicknames.GetRandomNickname(),
+                PasswordHash = SecurityHelper.HashPassword(randomPassword.ToString())
+            };
+
+            await DataBase.Users.AddAsync(user);
+            await DataBase.SaveChangesAsync();
+
+            user.UserName = $"guest-{user.Id}";
+            DataBase.Users.Update(user);
+            await DataBase.SaveChangesAsync();
+
+            return new RUserLogin()
+            {
+                Token = GenerateToken(user),
+                NickName = user.NickName,
+                Avatar = user.Avatar,
+            };
+        }
+        
+        public async Task<RUserLogin> RegisterAsync(RegisterRequest request)
         {
             request.NickName = request.NickName.Trim();
-            request.UserName = request.UserName.Trim();
+            request.UserName = request.UserName.Trim().ToLower();
             request.Email = request.Email.Trim();
 
-            if (await IsUserExist(request.UserName))
+            if (request.UserName.StartsWith("guest-") || await IsUserExist(request.UserName))
                 throw new AppException(ApiResultStatusCode.UserNameExist);
 
             if (string.IsNullOrEmpty(request.UserName))
@@ -54,15 +80,20 @@ namespace Business.Users
                 PasswordHash = SecurityHelper.HashPassword(request.Password)
             };
 
-            await db.Users.AddAsync(user);
-            await db.SaveChangesAsync();
+            await DataBase.Users.AddAsync(user);
+            await DataBase.SaveChangesAsync();
 
-            return GenerateToken(user);
+            return new RUserLogin()
+            {
+                Token = GenerateToken(user),
+                NickName = user.NickName,
+                Avatar = user.Avatar,
+            };
         }
-
-        public async Task<string> LoginAsync(LoginRequest request)
+        
+        public async Task<RUserLogin> LoginAsync(LoginRequest request)
         {
-            var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+            var user = await DataBase.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
 
             if (user == null)
                 throw new AppException(ApiResultStatusCode.UserNotExist);
@@ -71,29 +102,34 @@ namespace Business.Users
                 throw new AppException(ApiResultStatusCode.WrongPassword);
 
             user.LastLoginDate = DateTime.Now;
-            await db.SaveChangesAsync();
-            return GenerateToken(user);
+            await DataBase.SaveChangesAsync();
+            return new RUserLogin()
+            {
+                Token = GenerateToken(user),
+                NickName = user.NickName,
+                Avatar = user.Avatar,
+            };
         }
 
-        public async Task<bool> IsUserExist(string userName) => await db.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());
+        public async Task<bool> IsUserExist(string userName) => await DataBase.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());
 
         private string GenerateToken(User user)
         {
-            var key = Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]);
+            var key = Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"]);
             var SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
 
-            var encryptionKey = Encoding.UTF8.GetBytes(configuration["Jwt:EncryptKey"]);
+            var encryptionKey = Encoding.UTF8.GetBytes(Configuration["Jwt:EncryptKey"]);
             var encryptingCridentials = new EncryptingCredentials(new SymmetricSecurityKey(encryptionKey), SecurityAlgorithms.Aes128KW, SecurityAlgorithms.Aes128CbcHmacSha256);
 
 
-            var issuedAt = DateTime.Now.AddMinutes(Convert.ToInt32(configuration["Jwt:IssuedAt"]));
-            var notBefore = DateTime.Now.AddMinutes(Convert.ToInt32(configuration["Jwt:NotBeforeMinute"]));
-            var expires = DateTime.Now.AddMinutes(Convert.ToInt32(configuration["Jwt:ExpiresMinute"]));
+            var issuedAt = DateTime.Now.AddMinutes(Convert.ToInt32(Configuration["Jwt:IssuedAt"]));
+            var notBefore = DateTime.Now.AddMinutes(Convert.ToInt32(Configuration["Jwt:NotBeforeMinute"]));
+            var expires = DateTime.Now.AddMinutes(Convert.ToInt32(Configuration["Jwt:ExpiresMinute"]));
 
             var descriptor = new SecurityTokenDescriptor
             {
-                Issuer = configuration["Jwt:Issuer"],
-                Audience = configuration["Jwt:Audience"],
+                Issuer = Configuration["Jwt:Issuer"],
+                Audience = Configuration["Jwt:Audience"],
                 IssuedAt = issuedAt,
                 NotBefore = notBefore,
                 Expires = expires,

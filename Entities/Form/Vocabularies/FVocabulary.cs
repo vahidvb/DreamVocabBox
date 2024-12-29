@@ -11,7 +11,7 @@ namespace Entities.Form.Vocabularies
     }
     public class FAddEditVocabulary
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
         [JsonIgnore]
         public int UserId { get; set; }
         public string Word { get; set; }

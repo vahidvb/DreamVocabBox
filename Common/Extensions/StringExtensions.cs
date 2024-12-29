@@ -5,6 +5,7 @@ namespace Common.Extensions
 {
     public static class StringExtensions
     {
+        public static bool IsEmpty(this string value) => value == null || value.Trim() == "";
         public static Guid ToGuid(this string value) => new Guid(value);
         public static string ToPersianAlphabet(this string value, bool haveExtension = false)
         {

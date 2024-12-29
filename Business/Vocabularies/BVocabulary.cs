@@ -19,6 +19,9 @@ namespace Business.Vocabularies
 
         public async Task AddVocabulary(FAddEditVocabulary form)
         {
+            if (form.Word.IsEmpty() || form.Meaning.IsEmpty())
+                throw new AppException(ApiResultStatusCode.VocabularyWordMeaningIsRequied);
+
             var info = new Vocabulary()
             {
                 Word = form.Word,
@@ -36,7 +39,7 @@ namespace Business.Vocabularies
 
             var exist = await DataBase.Vocabularies.AnyAsync(x => x.UserId == info.UserId && x.Word.ToLower() == info.Word.ToLower());
             if (exist)
-                throw new AppException(ApiResultStatusCode.EntityExists);
+                throw new AppException(ApiResultStatusCode.VocabularyAlreadyAdded);
 
             await DataBase.Vocabularies.AddAsync(info);
             await DataBase.SaveChangesAsync();

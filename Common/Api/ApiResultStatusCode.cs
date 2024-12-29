@@ -81,5 +81,11 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("Vocabulary removed successfuly", true)]
         VocabularyRemoved = 25,
+
+        [CustomDisplayStatusAttribute("You have already added this vocabulary.")]
+        VocabularyAlreadyAdded = 26,
+
+        [CustomDisplayStatusAttribute("The word or its meaning is requied")]
+        VocabularyWordMeaningIsRequied = 27,
     }
 }
