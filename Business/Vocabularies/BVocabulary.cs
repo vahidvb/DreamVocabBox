@@ -79,12 +79,55 @@ namespace Business.Vocabularies
             await DataBase.SaveChangesAsync();
         }
 
+        private async Task<Vocabulary?> GetUnCheckedVocabularyMethod(FGetUnCheckedVocabulary form)
+        {
+            var thresholdDate = DateTime.Now.AddDays(-1 * form.BoxNumber);
+            var res = await DataBase.Vocabularies
+                .FirstOrDefaultAsync(x => x.UserId == form.UserId &&
+                                          x.BoxNumber == form.BoxNumber &&
+                                          x.LastSeenDateTime < thresholdDate);
+            return res;
+        }
+
+        public async Task<Vocabulary> GetUnCheckedVocabulary(FGetUnCheckedVocabulary form)
+        {
+            var res = await GetUnCheckedVocabularyMethod(form);
+
+            if (res == null)
+                throw new AppException(ApiResultStatusCode.VocabularyCantFind);
+
+            return res;
+        }
+
+        public async Task<Vocabulary> SetVocabularyCheck(FSetVocabularyCheck form)
+        {
+            var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.VocabularyId.ToGuid() && x.UserId == form.UserId);
+            if (vocabulary == null)
+                throw new AppException(ApiResultStatusCode.VocabularyCantFind);
+
+            var lastBoxNumber = vocabulary.BoxNumber;
+            vocabulary.LastSeenDateTime = DateTime.Now;
+            vocabulary.BoxNumber = form.Learned && vocabulary.BoxNumber < 7 ? vocabulary.BoxNumber + 1 : (!form.Learned && vocabulary.BoxNumber > 1 ? vocabulary.BoxNumber - 1 : vocabulary.BoxNumber);
+
+            DataBase.Vocabularies.Update(vocabulary);
+            await DataBase.SaveChangesAsync();
+
+            var res = await GetUnCheckedVocabularyMethod(new FGetUnCheckedVocabulary() { BoxNumber = lastBoxNumber, UserId = form.UserId });
+
+            if (res == null)
+                throw new AppException(ApiResultStatusCode.VocabularyCheckedButCantFindNewOne);
+
+            return res;
+
+        }
+
         public async Task<RVocabularyPagination> GetVocabulariesPagination(FGetVocabularyPagination form)
         {
-            var totalCount = await DataBase.Vocabularies.CountAsync(x => x.UserId == form.UserId);
+            var totalCount = await DataBase.Vocabularies.CountAsync(x => x.UserId == form.UserId && x.BoxNumber == form.BoxNumber);
 
             var vocabularies = await DataBase.Vocabularies
                 .Where(x => x.UserId == form.UserId)
+                .OrderBy(x => x.LastSeenDateTime)
                 .Skip(form.ListPosition)
                 .Take(form.ListLength)
                 .ToListAsync();
@@ -105,14 +148,15 @@ namespace Business.Vocabularies
             var result = new List<RVocabularyBox>();
             for (int BoxNumber = 1; BoxNumber <= 7; BoxNumber++)
             {
+                var thresholdDate = DateTime.Now.AddDays(-1 * BoxNumber);
                 var all = await DataBase.Vocabularies.Where(x => x.UserId == UserId && x.BoxNumber == BoxNumber).ToListAsync();
 
                 result.Add(new RVocabularyBox
                 {
                     AllCount = all.Count(),
                     BoxNumber = BoxNumber,
-                    CheckedCount = all.Count(x => x.LastSeenDateTime.Date == DateTime.Now.Date),
-                    UnCheckedCount = all.Count(x => x.LastSeenDateTime.Date < DateTime.Now.Date),
+                    CheckedCount = all.Count(x => x.LastSeenDateTime > thresholdDate),
+                    UnCheckedCount = all.Count(x => x.LastSeenDateTime < thresholdDate),
                 });
             }
             return result;

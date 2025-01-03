@@ -1,5 +1,6 @@
 ﻿using Common.Api;
 using Entities.Form.Vocabularies;
+using Entities.Model.Vocabularies;
 using Entities.Response.Vocabularies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,5 +53,19 @@ namespace WebApi.Controllers
 
         [HttpPost]
         public async Task<ApiResult<List<RVocabularyBox>>> GetVocabulariesBoxes() => new ApiResult<List<RVocabularyBox>>(await service.GetVocabulariesBoxes(CurrentUser.Id));
+
+        [HttpPost]
+        public async Task<ApiResult<Vocabulary>> GetUnCheckedVocabulary(FGetUnCheckedVocabulary form)
+        {
+            form.UserId = CurrentUser.Id;
+            return new ApiResult<Vocabulary>(await service.GetUnCheckedVocabulary(form));
+        }
+
+        [HttpPost]
+        public async Task<ApiResult<Vocabulary>> SetVocabularyCheck(FSetVocabularyCheck form)
+        {
+            form.UserId = CurrentUser.Id;
+            return new ApiResult<Vocabulary>(await service.SetVocabularyCheck(form));
+        }
     }
 }

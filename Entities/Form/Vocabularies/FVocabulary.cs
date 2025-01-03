@@ -2,10 +2,24 @@
 
 namespace Entities.Form.Vocabularies
 {
+    public class FSetVocabularyCheck
+    {
+        [JsonIgnore]
+        public int UserId { get; set; }
+        public string VocabularyId { get; set; }
+        public bool Learned { get; set; }
+    }
+    public class FGetUnCheckedVocabulary
+    {
+        [JsonIgnore]
+        public int UserId { get; set; }
+        public int BoxNumber { get; set; }
+    }
     public class FGetVocabularyPagination
     {
         [JsonIgnore]
         public int UserId { get; set; }
+        public int BoxNumber { get; set; }
         public int ListLength { get; set; }
         public int ListPosition { get; set; }
     }

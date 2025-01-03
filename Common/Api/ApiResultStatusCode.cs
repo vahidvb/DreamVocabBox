@@ -87,5 +87,11 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("The word or its meaning is requied")]
         VocabularyWordMeaningIsRequied = 27,
+
+        [CustomDisplayStatusAttribute("Can't find any vocabulary")]
+        VocabularyCantFind = 28,
+
+        [CustomDisplayStatusAttribute("Congratulations! All the words in this box have been checked", true)]
+        VocabularyCheckedButCantFindNewOne = 29,
     }
 }

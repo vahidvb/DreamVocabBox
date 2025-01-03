@@ -20,6 +20,7 @@ namespace WebFramework.Middlewares
             string message = null;
             HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError;
             var apiStatusCode = ApiResultStatusCode.UnHandledError;
+            object apiData = null;
             Exception ex = null;
 
             try
@@ -31,6 +32,8 @@ namespace WebFramework.Middlewares
                 ex = exception;
                 httpStatusCode = exception.HttpStatusCode;
                 apiStatusCode = exception._ApiStatusCodes;
+                if (exception.AdditionalData != null)
+                    apiData = exception.AdditionalData;
 
                 message = apiStatusCode.GetCustomDisplayName() ?? "An error has occurred";
                 await WriteToResponseAsync(exception);
@@ -72,7 +75,12 @@ namespace WebFramework.Middlewares
                 if (context.Response.HasStarted)
                     throw new InvalidOperationException("The response has already started, the http status code middleware will not be executed.");
 
-                var result = new ApiResult(apiStatusCode, message);
+                var result = new ApiResult();
+                if (apiData == null)
+                    result = new ApiResult(apiStatusCode, message);
+                else
+                    result = new ApiResult<object>(apiData, apiStatusCode, message);
+
                 var json = JsonConvert.SerializeObject(result);
 
                 context.Response.StatusCode = (int)httpStatusCode;
