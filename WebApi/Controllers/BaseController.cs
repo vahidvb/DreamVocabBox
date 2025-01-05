@@ -9,8 +9,10 @@ using System.Threading;
 
 namespace WebApi.Controllers
 {
-    public class BaseController : ControllerBase
+    public class BaseController<TService>(TService service) : ControllerBase
     {
+        protected readonly TService service = service;
+
         public VMUserMiniInfo CurrentUser
         {
             get

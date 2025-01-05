@@ -1,4 +1,5 @@
-﻿using Business.Users;
+﻿using Business.Dictionaries;
+using Business.Users;
 using Business.Vocabularies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,7 @@ namespace Service
         {
             services.AddScoped<IVocabularyService, BVocabulary>();
             services.AddScoped<IUserService, BUser>();
+            services.AddScoped<IDictionaryService, BDictionary>();
         }
 
     }

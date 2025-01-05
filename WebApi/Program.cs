@@ -1,4 +1,6 @@
-﻿using Data;
+﻿using Business.Dictionaries;
+using Business.Users;
+using Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -95,5 +97,11 @@ app.UseMiddleware<JwtMiddleware>();
 app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dictionaryService = scope.ServiceProvider.GetRequiredService<IDictionaryService>();
+    await dictionaryService.SeedDictionaryData();
+}
 
 app.Run();

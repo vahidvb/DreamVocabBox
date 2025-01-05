@@ -6,14 +6,8 @@ namespace WebApi.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    public class UsersController : BaseController
+    public class UsersController(IUserService service) : BaseController<IUserService>(service)
     {
-        public readonly IUserService service;
-        public UsersController(IUserService service)
-        {
-            this.service = service;
-        }
-
         [HttpPost]
         public async Task<ApiResult<RUserLogin>> Register([FromBody] RegisterRequest request) => new ApiResult<RUserLogin>(await service.RegisterAsync(request), ApiResultStatusCode.RegistrationCompleted);
 

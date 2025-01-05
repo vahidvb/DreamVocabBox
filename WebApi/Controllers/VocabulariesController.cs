@@ -11,15 +11,8 @@ namespace WebApi.Controllers
     [Authorize]
     [Route("[controller]/[action]")]
     [ApiController]
-    public class VocabulariesController : BaseController
+    public class VocabulariesController(IVocabularyService service) : BaseController<IVocabularyService>(service)
     {
-        public readonly IVocabularyService service;
-
-        public VocabulariesController(IVocabularyService service)
-        {
-            this.service = service;
-        }
-
         [HttpPost]
         public async Task<ApiResult> RemoveVocabulary(FRemoveVocabulary form)
         {

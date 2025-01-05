@@ -93,5 +93,8 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("Congratulations! All the words in this box have been checked", true)]
         VocabularyCheckedButCantFindNewOne = 29,
+
+        [CustomDisplayStatusAttribute("Sorry! You cant change Word field")]
+        VocabularyCantEditWord = 30,
     }
 }

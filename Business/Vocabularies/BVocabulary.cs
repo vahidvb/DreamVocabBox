@@ -52,12 +52,15 @@ namespace Business.Vocabularies
 
             var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.Id.ToGuid());
 
+
             if (vocabulary == null)
                 throw new AppException(ApiResultStatusCode.EntityNotFound);
 
             if (vocabulary.UserId != form.UserId)
                 throw new AppException(ApiResultStatusCode.DontAllowAccessThisResource);
 
+            if (vocabulary.Word != form.Word)
+                throw new AppException(ApiResultStatusCode.VocabularyCantEditWord);
 
             vocabulary = new Vocabulary()
             {
@@ -126,7 +129,7 @@ namespace Business.Vocabularies
             var totalCount = await DataBase.Vocabularies.CountAsync(x => x.UserId == form.UserId && x.BoxNumber == form.BoxNumber);
 
             var vocabularies = await DataBase.Vocabularies
-                .Where(x => x.UserId == form.UserId)
+                .Where(x => x.UserId == form.UserId && x.BoxNumber == form.BoxNumber)
                 .OrderBy(x => x.LastSeenDateTime)
                 .Skip(form.ListPosition)
                 .Take(form.ListLength)
