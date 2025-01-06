@@ -62,21 +62,9 @@ namespace Business.Vocabularies
             if (vocabulary.Word != form.Word)
                 throw new AppException(ApiResultStatusCode.VocabularyCantEditWord);
 
-            vocabulary = new Vocabulary()
-            {
-                Id = form.Id.ToGuid(),
-                Word = form.Word,
-                Meaning = form.Meaning,
-                UserId = form.UserId,
-                BoxNumber = vocabulary.BoxNumber,
-                Description = form.Description,
-                Example = form.Example,
-                IsActive = true,
-                LastChangeDate = DateTime.Now,
-                RegisterDate = DateTime.Now,
-                LastSeenDateTime = DateTime.Now,
-                SeenCount = vocabulary.SeenCount,
-            };
+            vocabulary.Meaning = form.Meaning;
+            vocabulary.Description = form.Description;
+            vocabulary.Example = form.Example;
 
             DataBase.Vocabularies.Update(vocabulary);
             await DataBase.SaveChangesAsync();
