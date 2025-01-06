@@ -1,5 +1,6 @@
 ﻿using Common.Api;
 using Entities.Model.Dictionaries;
+using Entities.Response.Dictionaries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,9 @@ namespace WebApi.Controllers
             return new ApiResult<List<DictionaryEnglishToEnglish>>(await service.SearchEnglishToEnglish(input,10));
         }
         [HttpPost]
-        public async Task<ApiResult<DictionaryEnglishToEnglish>> FindEnglishToEnglish([FromBody] string input)
+        public async Task<ApiResult<REnglishPersian>> FindEnglish([FromBody] string input)
         {
-            return new ApiResult<DictionaryEnglishToEnglish>(await service.FindEnglishToEnglish(input));
+            return new ApiResult<REnglishPersian>(await service.FindEnglish(input));
         }
 
     }

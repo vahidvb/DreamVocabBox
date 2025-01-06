@@ -2,6 +2,7 @@
 using Common;
 using Data;
 using Entities.Model.Dictionaries;
+using Entities.Response.Dictionaries;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,12 +19,19 @@ namespace Business.Dictionaries
         public BDictionary(DreamVocabBoxContext DataBase, IConfiguration configuration) : base(DataBase, configuration)
         {
         }
-        public async Task<DictionaryEnglishToEnglish> FindEnglishToEnglish(string input)
+        public async Task<REnglishPersian> FindEnglish(string input)
         {
-            var res = await DataBase.DictionaryEnglishToEnglishs.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input.ToLower()));
-            if (res == null) 
+            var en = await DataBase.DictionaryEnglishToEnglishs.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input.ToLower()));
+            var fa = await DataBase.DictionaryEnglishToPersians.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input.ToLower()));
+            if (en == null && fa == null)
                 throw new AppException(Common.Api.ApiResultStatusCode.NotFound);
-            return res;
+            return new REnglishPersian()
+            {
+                Word = input,
+                DefinitionEn = en?.Definition,
+                DefinitionFa = fa?.Definition,
+                Forms = en?.Forms,
+            };
         }
         public async Task<List<DictionaryEnglishToEnglish>> SearchEnglishToEnglish(string input, int length)
         {
