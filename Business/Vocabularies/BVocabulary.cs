@@ -148,6 +148,7 @@ namespace Business.Vocabularies
                     BoxNumber = BoxNumber,
                     CheckedCount = all.Count(x => x.LastSeenDateTime > thresholdDate),
                     UnCheckedCount = all.Count(x => x.LastSeenDateTime < thresholdDate),
+                    SoonTime = all.Where(x => x.LastSeenDateTime > thresholdDate).OrderBy(x => x.LastSeenDateTime).FirstOrDefault()?.LastChangeDate.ToNotNullable().AddDays(BoxNumber).ToHumanReadableTime("dhm") ?? "",
                 });
             }
             return result;
