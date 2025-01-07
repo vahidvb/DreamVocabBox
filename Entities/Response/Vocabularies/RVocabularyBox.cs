@@ -12,5 +12,6 @@ namespace Entities.Response.Vocabularies
         public int AllCount { get; set; }
         public int UnCheckedCount { get; set; }
         public int CheckedCount { get; set; }
+        public string SoonTime { get; set; }
     }
 }

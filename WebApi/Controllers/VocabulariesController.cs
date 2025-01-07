@@ -14,10 +14,9 @@ namespace WebApi.Controllers
     public class VocabulariesController(IVocabularyService service) : BaseController<IVocabularyService>(service)
     {
         [HttpPost]
-        public async Task<ApiResult> RemoveVocabulary(FRemoveVocabulary form)
+        public async Task<ApiResult> RemoveVocabulary([FromBody] string VocabularyId)
         {
-            form.UserId = CurrentUser.Id;
-            await service.RemoveVocabulary(form);
+            await service.RemoveVocabulary(new FRemoveVocabulary() { UserId = CurrentUser.Id, VocabularyId = VocabularyId });
             return new ApiResult(ApiResultStatusCode.VocabularyRemoved);
         }
 

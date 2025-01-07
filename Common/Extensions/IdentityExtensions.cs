@@ -33,7 +33,11 @@ namespace Common.Extensions
 
         public static string GetUserName(this IIdentity identity)
         {
-            return identity?.FindFirstValue(ClaimTypes.Name);
+            return identity?.FindFirstValue("UserName");
+        }
+        public static string GetNickName(this IIdentity identity)
+        {
+            return identity?.FindFirstValue("NickName");
         }
     }
 }

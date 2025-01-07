@@ -20,8 +20,8 @@ namespace WebApi.Controllers
                 return new VMUserMiniInfo()
                 {
                     Id = HttpContext.User.Identity.GetUserId<int>(),
-                    NickName = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NickName")?.Value ?? "",
-                    UserName = HttpContext.User.Claims.First(x => x.Type == "UserName")?.Value ?? "",
+                    NickName = HttpContext.User.Identity.GetNickName(),
+                    UserName = HttpContext.User.Identity.GetUserName(),
                 };
             }
         }

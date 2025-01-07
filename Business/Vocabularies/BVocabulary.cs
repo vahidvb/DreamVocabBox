@@ -163,6 +163,7 @@ namespace Business.Vocabularies
                 throw new AppException(ApiResultStatusCode.DontAllowAccessThisResource);
 
             DataBase.Vocabularies.Remove(vocabulary);
+            await DataBase.SaveChangesAsync();
         }
     }
 }

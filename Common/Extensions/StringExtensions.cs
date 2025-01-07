@@ -7,18 +7,6 @@ namespace Common.Extensions
     {
         public static bool IsEmpty(this string value) => value == null || value.Trim() == "";
         public static Guid ToGuid(this string value) => new Guid(value);
-        public static string ToPersianAlphabet(this string value, bool haveExtension = false)
-        {
-            return ConvertNumberToPersianAlphabet.NumberToAlphabet(value, haveExtension );
-        }
-        public static string ToPersianAlphabet(this int value,bool haveExtension=false)
-        {
-            return ConvertNumberToPersianAlphabet.NumberToAlphabet(value,haveExtension);
-        }
-        public static string ToPersianAlphabet(this long value, bool haveExtension = false)
-        {
-            return ConvertNumberToPersianAlphabet.NumberToAlphabet(value.ToString(), haveExtension);
-        }
         public static bool HasValue(this string value, bool ignoreWhiteSpace = true)
         {
             return ignoreWhiteSpace ? !string.IsNullOrWhiteSpace(value) : !string.IsNullOrEmpty(value);
@@ -46,28 +34,12 @@ namespace Common.Extensions
 
         public static string ToCurrency(this int value)
         {
-            //fa-IR => current culture currency symbol => ریال
-            //123456 => "123,123ریال"
             return value.ToString("C0");
         }
 
         public static string ToCurrency(this decimal value)
         {
             return value.ToString("C0");
-        }
-
-        public static string En2Fa(this string str)
-        {
-            return str.Replace("0", "۰")
-                .Replace("1", "۱")
-                .Replace("2", "۲")
-                .Replace("3", "۳")
-                .Replace("4", "۴")
-                .Replace("5", "۵")
-                .Replace("6", "۶")
-                .Replace("7", "۷")
-                .Replace("8", "۸")
-                .Replace("9", "۹");
         }
 
         public static string Fa2En(this string str)
@@ -106,16 +78,6 @@ namespace Common.Extensions
                 .Replace(" ", " ")
                 .Replace("‌", " ")
                 .Replace("ھ", "ه");//.Replace("ئ", "ی");
-        }
-
-        public static string CleanString(this string str)
-        {
-            return str.Trim().FixPersianChars().Fa2En().NullIfEmpty();
-        }
-
-        public static string NullIfEmpty(this string str)
-        {
-            return str?.Length == 0 ? null : str;
         }
     }
 }
