@@ -96,5 +96,11 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("Sorry! You cant change Word field")]
         VocabularyCantEditWord = 30,
+
+        [CustomDisplayStatusAttribute("Sorry! Please fill requied fields")]
+        RequiedFields = 31,
+
+        [CustomDisplayStatusAttribute("No changes were found in your request")]
+        NoChangesFound = 32,
     }
 }

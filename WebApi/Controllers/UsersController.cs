@@ -16,5 +16,12 @@ namespace WebApi.Controllers
 
         [HttpPost]
         public async Task<ApiResult<RUserLogin>> RegisterAsGuest() => new ApiResult<RUserLogin>(await service.RegisterAsGuestAsync(), ApiResultStatusCode.RegistrationCompleted);
+
+        [HttpPost]
+        public async Task<ApiResult<RUserLogin>> UpdateProfile(RUserLogin form)
+        {
+            form.Id = CurrentUser.Id;
+            return new ApiResult<RUserLogin>(await service.UpdateProfileAsync(form));
+        }
     }
 }

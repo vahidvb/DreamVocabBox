@@ -1,5 +1,7 @@
-﻿using Common;
+﻿using Azure.Core;
+using Common;
 using Common.Api;
+using Common.Extensions;
 using Common.Utilities;
 using Data;
 using Entities.Form.Users;
@@ -14,12 +16,68 @@ using System.Text;
 
 namespace Business.Users
 {
-    public class BUser : BaseBusiness , IUserService
+    public class BUser : BaseBusiness, IUserService
     {
         public BUser(DreamVocabBoxContext db, IConfiguration configuration) : base(db, configuration)
         {
         }
+        public async Task<RUserLogin> UpdateProfileAsync(RUserLogin form)
+        {
+            form.NickName = form.NickName.Trim();
+            form.UserName = form.UserName.Trim().ToLower();
+            form.Email = (form.Email ?? "").Trim();
 
+            if (string.IsNullOrEmpty(form.UserName))
+                throw new AppException(ApiResultStatusCode.UserNameIsEmpty);
+
+            if (form.UserName.Contains(' '))
+                throw new AppException(ApiResultStatusCode.UserNameHasSpace);
+
+            if ((form.Password ?? "").Contains(' '))
+                throw new AppException(ApiResultStatusCode.PasswordHasSpace);
+
+            if (form.NickName.IsEmpty())
+                    throw new AppException(ApiResultStatusCode.NickNameIsEmpty);
+
+            var user = await DataBase.Users.FirstOrDefaultAsync(x => x.Id == form.Id);
+            if (user == null)
+                throw new AppException(ApiResultStatusCode.UserNotExist);
+
+            var userNameExist = await DataBase.Users.AnyAsync(x => x.Id != form.Id && x.UserName.ToLower() == form.UserName.ToLower());
+            if (userNameExist)
+                throw new AppException(ApiResultStatusCode.UserNameExist);
+
+            if (form.UserName.StartsWith("guest-") && form.UserName != user.UserName )
+                throw new AppException(ApiResultStatusCode.UserNameExist);
+
+            if (user.NickName == form.NickName && user.UserName == form.UserName && user.Avatar == form.Avatar && (user.Email ?? "") == (form.Email ?? "") && (form.Password ?? "").IsEmpty())
+                throw new AppException(ApiResultStatusCode.NoChangesFound);
+
+
+            var emailExist = await DataBase.Users.AnyAsync(x => x.Id != form.Id && !form.Email.IsEmpty() && x.Email != null && x.Email.ToLower() == form.Email);
+            if (emailExist)
+                throw new AppException(ApiResultStatusCode.EmailExist);
+
+
+            if (!form.Password.IsEmpty())
+                user.PasswordHash = SecurityHelper.HashPassword(form.Password);
+
+            user.Avatar = form.Avatar;
+            user.Email = form.Email;
+            user.NickName = form.NickName;
+            user.UserName = form.UserName;
+
+            DataBase.Users.Update(user);
+            await DataBase.SaveChangesAsync();
+            return new RUserLogin()
+            {
+                Token = GenerateToken(user),
+                NickName = user.NickName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                UserName = user.UserName
+            };
+        }
         public async Task<RUserLogin> RegisterAsGuestAsync()
         {
             Random random = new Random();
@@ -45,9 +103,11 @@ namespace Business.Users
                 Token = GenerateToken(user),
                 NickName = user.NickName,
                 Avatar = user.Avatar,
+                Email = user.Email,
+                UserName = user.UserName
             };
         }
-        
+
         public async Task<RUserLogin> RegisterAsync(RegisterRequest request)
         {
             request.NickName = request.NickName.Trim();
@@ -88,9 +148,11 @@ namespace Business.Users
                 Token = GenerateToken(user),
                 NickName = user.NickName,
                 Avatar = user.Avatar,
+                Email = user.Email,
+                UserName = user.UserName
             };
         }
-        
+
         public async Task<RUserLogin> LoginAsync(LoginRequest request)
         {
             var user = await DataBase.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
@@ -108,6 +170,8 @@ namespace Business.Users
                 Token = GenerateToken(user),
                 NickName = user.NickName,
                 Avatar = user.Avatar,
+                Email = user.Email,
+                UserName = user.UserName
             };
         }
 
