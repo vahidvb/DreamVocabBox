@@ -85,7 +85,7 @@ namespace Common.Api
         [CustomDisplayStatusAttribute("You have already added this vocabulary.")]
         VocabularyAlreadyAdded = 26,
 
-        [CustomDisplayStatusAttribute("The word or its meaning is requied")]
+        [CustomDisplayStatusAttribute("The word is requied")]
         VocabularyWordMeaningIsRequied = 27,
 
         [CustomDisplayStatusAttribute("Can't find any vocabulary")]

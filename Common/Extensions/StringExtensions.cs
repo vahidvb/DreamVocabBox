@@ -1,10 +1,28 @@
 ﻿using Common.Utilities;
 using System;
+using System.Globalization;
 
 namespace Common.Extensions
 {
     public static class StringExtensions
     {
+        public static string ToUppercaseFirst(this string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+            if (input.Length == 1)
+                return input.ToUpper();
+            return char.ToUpper(input[0]) + input.Substring(1);
+        }
+        public static string ToPascalCase(this string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+            var words = input.Split(new char[] { ' ', '-', '_', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < words.Length; i++)
+                words[i] = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(words[i].ToLower());
+            return string.Join("", words);
+        }
         public static bool IsEmpty(this string value) => value == null || value.Trim() == "";
         public static Guid ToGuid(this string value) => new Guid(value);
         public static bool HasValue(this string value, bool ignoreWhiteSpace = true)

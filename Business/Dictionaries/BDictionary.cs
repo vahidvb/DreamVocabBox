@@ -1,16 +1,12 @@
-﻿using Business.Users;
-using Common;
+﻿using Common;
+using Common.Api;
+using Common.Extensions;
 using Data;
 using Entities.Model.Dictionaries;
 using Entities.Response.Dictionaries;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Dictionaries
 {
@@ -19,12 +15,32 @@ namespace Business.Dictionaries
         public BDictionary(DreamVocabBoxContext DataBase, IConfiguration configuration) : base(DataBase, configuration)
         {
         }
+        public async Task<RSuggestWord> SuggestWord(int UserId)
+        {
+            var dictionaryWord = await (from d in DataBase.DictionaryEnglishToEnglishs
+                                        join v in DataBase.Vocabularies
+                                        on d.Word.ToLower() equals v.Word.ToLower() into vocabGroup
+                                        from vg in vocabGroup.DefaultIfEmpty()
+                                        where vg == null || vg.UserId != UserId
+                                        orderby Guid.NewGuid()
+                                        select d)
+                                        .FirstOrDefaultAsync();
+            
+            if (dictionaryWord == null)
+                throw new AppException(ApiResultStatusCode.NotFound);
+
+            return new RSuggestWord
+            {
+                Word = dictionaryWord.Word.ToUppercaseFirst(),
+                Definition = dictionaryWord.Definition
+            };
+        }
         public async Task<REnglishPersian> FindEnglish(string input)
         {
             var en = await DataBase.DictionaryEnglishToEnglishs.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input.ToLower()));
             var fa = await DataBase.DictionaryEnglishToPersians.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input.ToLower()));
             if (en == null && fa == null)
-                throw new AppException(Common.Api.ApiResultStatusCode.NotFound);
+                throw new AppException(ApiResultStatusCode.NotFound);
             return new REnglishPersian()
             {
                 Word = input,

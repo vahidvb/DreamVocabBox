@@ -9,4 +9,5 @@ public interface IDictionaryService
     Task SeedDictionaryData();
     Task<List<DictionaryEnglishToEnglish>> SearchEnglishToEnglish(string input, int length);
     Task<REnglishPersian> FindEnglish(string input);
+    Task<RSuggestWord> SuggestWord(int UserId);
 }

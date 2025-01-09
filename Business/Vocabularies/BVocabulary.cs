@@ -19,7 +19,7 @@ namespace Business.Vocabularies
 
         public async Task AddVocabulary(FAddEditVocabulary form)
         {
-            if (form.Word.IsEmpty() || form.Meaning.IsEmpty())
+            if (form.Word.IsEmpty())
                 throw new AppException(ApiResultStatusCode.VocabularyWordMeaningIsRequied);
 
             var info = new Vocabulary()
@@ -77,6 +77,11 @@ namespace Business.Vocabularies
                 .FirstOrDefaultAsync(x => x.UserId == form.UserId &&
                                           x.BoxNumber == form.BoxNumber &&
                                           x.LastSeenDateTime < thresholdDate);
+            if (res != null)
+            {
+                res.Word = res.Word?.ToPascalCase();
+                res.Meaning = res.Meaning.ToUppercaseFirst();
+            }
             return res;
         }
 
@@ -122,6 +127,12 @@ namespace Business.Vocabularies
                 .Skip(form.ListPosition)
                 .Take(form.ListLength)
                 .ToListAsync();
+
+            vocabularies.ForEach(x =>
+            {
+                x.Word = x.Word.ToPascalCase();
+                x.Meaning = x.Meaning.ToUppercaseFirst();
+            });
 
             var totalPage = (int)Math.Ceiling((double)totalCount / form.ListLength);
 

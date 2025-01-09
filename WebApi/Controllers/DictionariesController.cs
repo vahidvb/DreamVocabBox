@@ -21,6 +21,10 @@ namespace WebApi.Controllers
         {
             return new ApiResult<REnglishPersian>(await service.FindEnglish(input));
         }
-
+        [HttpPost]
+        public async Task<ApiResult<RSuggestWord>> SuggestWord()
+        {
+            return new ApiResult<RSuggestWord>(await service.SuggestWord(CurrentUser.Id));
+        }
     }
 }
