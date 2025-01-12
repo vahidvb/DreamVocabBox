@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using Entities.Enum.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Model.Users
@@ -17,11 +17,13 @@ namespace Entities.Model.Users
         public string PasswordHash { get; set; }
         public string Role { get; set; }
         public int Avatar { get; set; }
+        public UserBoxScenarioEnum BoxScenario { get; set; }
         public User()
         {
             SecurityStamp = Guid.NewGuid();
             Role = "User";
             Avatar = 1;
+            BoxScenario = UserBoxScenarioEnum.DailyBox;
         }
 
     }

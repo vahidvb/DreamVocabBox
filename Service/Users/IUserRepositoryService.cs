@@ -6,6 +6,7 @@ namespace Service.Users
     {
         public VMUserMiniInfo Get(int UserId);
         public VMUserMiniInfo Add(int UserId);
+        public VMUserMiniInfo Add(VMUserMiniInfo User);
         public void Remove(int UserId);
     }
 }

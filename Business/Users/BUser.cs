@@ -4,12 +4,15 @@ using Common.Api;
 using Common.Extensions;
 using Common.Utilities;
 using Data;
+using Entities.Enum.Users;
 using Entities.Form.Users;
 using Entities.Model.Users;
 using Entities.Response.Users;
+using Entities.ViewModel.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Service.Users;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,9 +21,18 @@ namespace Business.Users
 {
     public class BUser : BaseBusiness, IUserService
     {
-        public BUser(DreamVocabBoxContext db, IConfiguration configuration) : base(db, configuration)
+        public BUser(DreamVocabBoxContext db, IConfiguration configuration, IUserRepositoryService userRepositoryService) : base(db, configuration,userRepositoryService)
         {
         }
+        public async Task<List<RUserBoxScenario>> GetScenarios() => Enum.GetValues(typeof(UserBoxScenarioEnum))
+                                .Cast<UserBoxScenarioEnum>()
+                                .Select(scenario => new RUserBoxScenario
+                                {
+                                    Id = (int)scenario,
+                                    Title = scenario.GetTitle(),
+                                    Description = scenario.GetDescription()
+                                })
+                                .ToList();
         public async Task<RUserLogin> UpdateProfileAsync(RUserLogin form)
         {
             form.NickName = form.NickName.Trim();
@@ -37,7 +49,7 @@ namespace Business.Users
                 throw new AppException(ApiResultStatusCode.PasswordHasSpace);
 
             if (form.NickName.IsEmpty())
-                    throw new AppException(ApiResultStatusCode.NickNameIsEmpty);
+                throw new AppException(ApiResultStatusCode.NickNameIsEmpty);
 
             var user = await DataBase.Users.FirstOrDefaultAsync(x => x.Id == form.Id);
             if (user == null)
@@ -47,10 +59,10 @@ namespace Business.Users
             if (userNameExist)
                 throw new AppException(ApiResultStatusCode.UserNameExist);
 
-            if (form.UserName.StartsWith("guest-") && form.UserName != user.UserName )
+            if (form.UserName.StartsWith("guest-") && form.UserName != user.UserName)
                 throw new AppException(ApiResultStatusCode.UserNameExist);
 
-            if (user.NickName == form.NickName && user.UserName == form.UserName && user.Avatar == form.Avatar && (user.Email ?? "") == (form.Email ?? "") && (form.Password ?? "").IsEmpty())
+            if (user.BoxScenario == form.BoxScenario && user.NickName == form.NickName && user.UserName == form.UserName && user.Avatar == form.Avatar && (user.Email ?? "") == (form.Email ?? "") && (form.Password ?? "").IsEmpty())
                 throw new AppException(ApiResultStatusCode.NoChangesFound);
 
 
@@ -66,15 +78,20 @@ namespace Business.Users
             user.Email = form.Email;
             user.NickName = form.NickName;
             user.UserName = form.UserName;
+            user.BoxScenario = form.BoxScenario;
 
             DataBase.Users.Update(user);
             await DataBase.SaveChangesAsync();
+
+            userRepositoryService.Add(new VMUserMiniInfo() { Id = user.Id, NickName = user.NickName, UserName = user.UserName, SecurityStamp = user.SecurityStamp.ToString(), BoxScenario = user.BoxScenario, Email = user.Email, Avatar = user.Avatar });
+
             return new RUserLogin()
             {
                 Token = GenerateToken(user),
                 NickName = user.NickName,
                 Avatar = user.Avatar,
                 Email = user.Email,
+                BoxScenario = user.BoxScenario,
                 UserName = user.UserName
             };
         }
@@ -104,6 +121,7 @@ namespace Business.Users
                 NickName = user.NickName,
                 Avatar = user.Avatar,
                 Email = user.Email,
+                BoxScenario = user.BoxScenario,
                 UserName = user.UserName
             };
         }
@@ -149,6 +167,7 @@ namespace Business.Users
                 NickName = user.NickName,
                 Avatar = user.Avatar,
                 Email = user.Email,
+                BoxScenario = user.BoxScenario,
                 UserName = user.UserName
             };
         }
@@ -171,6 +190,7 @@ namespace Business.Users
                 NickName = user.NickName,
                 Avatar = user.Avatar,
                 Email = user.Email,
+                BoxScenario = user.BoxScenario,
                 UserName = user.UserName
             };
         }

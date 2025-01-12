@@ -9,4 +9,5 @@ public interface IUserService
     Task<RUserLogin> RegisterAsync(RegisterRequest request);
     Task<RUserLogin> LoginAsync(LoginRequest request);
     Task<bool> IsUserExist(string userName);
+    Task<List<RUserBoxScenario>> GetScenarios();
 }

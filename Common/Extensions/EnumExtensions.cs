@@ -1,4 +1,5 @@
-﻿using Common.Utilities;
+﻿using Common.EnumTools;
+using Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +10,23 @@ namespace Common.Extensions
 {
     public static class EnumExtensions
     {
+        private static TitleDescriptionAttribute GetAttribute(Enum enumValue)
+        {
+            var field = enumValue.GetType().GetField(enumValue.ToString());
+            return field?.GetCustomAttribute<TitleDescriptionAttribute>();
+        }
+
+        public static string GetTitle(this Enum enumValue)
+        {
+            var attribute = GetAttribute(enumValue);
+            return attribute?.Title ?? enumValue.ToString();
+        }
+
+        public static string GetDescription(this Enum enumValue)
+        {
+            var attribute = GetAttribute(enumValue);
+            return attribute?.Description ?? string.Empty;
+        }
         public static IEnumerable<T> GetEnumValues<T>(this T input) where T : struct
         {
             if (!typeof(T).IsEnum)

@@ -7,13 +7,14 @@ using Entities.Model.Vocabularies;
 using Entities.Response.Vocabularies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Service.Users;
 using Service.Vocabularies;
 
 namespace Business.Vocabularies
 {
     public class BVocabulary : BaseBusiness, IVocabularyService
     {
-        public BVocabulary(DreamVocabBoxContext db, IConfiguration configuration) : base(db, configuration)
+        public BVocabulary(DreamVocabBoxContext db, IConfiguration configuration, IUserRepositoryService userRepositoryService) : base(db, configuration, userRepositoryService)
         {
         }
 
@@ -148,9 +149,28 @@ namespace Business.Vocabularies
         public async Task<List<RVocabularyBox>> GetVocabulariesBoxes(int UserId)
         {
             var result = new List<RVocabularyBox>();
+            var user = userRepositoryService.Get(UserId);
             for (int BoxNumber = 1; BoxNumber <= 7; BoxNumber++)
             {
-                var thresholdDate = DateTime.Now.AddDays(-1 * BoxNumber);
+                float days = 1;
+                var thresholdDate = DateTime.Now;
+                switch (user.BoxScenario)
+                {
+                    case Entities.Enum.Users.UserBoxScenarioEnum.HalfDayBox:
+                        thresholdDate = DateTime.Now.AddHours(-12);
+                        days = 0.5f;
+                        break;
+                    case Entities.Enum.Users.UserBoxScenarioEnum.DailyBox:
+                    default:
+                        thresholdDate = DateTime.Now.AddDays(-1);
+                        days = 1;
+                        break;
+                    case Entities.Enum.Users.UserBoxScenarioEnum.BoxNumberDays:
+                        thresholdDate = DateTime.Now.AddDays(-1 * BoxNumber);
+                        days = BoxNumber;
+                        break;
+                }
+                
                 var all = await DataBase.Vocabularies.Where(x => x.UserId == UserId && x.BoxNumber == BoxNumber).ToListAsync();
 
                 result.Add(new RVocabularyBox
@@ -159,7 +179,7 @@ namespace Business.Vocabularies
                     BoxNumber = BoxNumber,
                     CheckedCount = all.Count(x => x.LastSeenDateTime > thresholdDate),
                     UnCheckedCount = all.Count(x => x.LastSeenDateTime < thresholdDate),
-                    SoonTime = all.Where(x => x.LastSeenDateTime > thresholdDate).OrderBy(x => x.LastSeenDateTime).FirstOrDefault()?.LastChangeDate.ToNotNullable().AddDays(BoxNumber).ToHumanReadableTime("dhm") ?? "",
+                    SoonTime = all.Where(x => x.LastSeenDateTime > thresholdDate).OrderBy(x => x.LastSeenDateTime).FirstOrDefault()?.LastChangeDate.ToNotNullable().AddDays(days).ToHumanReadableTime("dhm") ?? "",
                 });
             }
             return result;
