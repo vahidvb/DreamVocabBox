@@ -1,23 +1,22 @@
-﻿using Entities.Model.Users;
-using Microsoft.AspNetCore.Http;
+﻿using Common.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using Service.Users;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 public class JwtMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly string _secretKey;
     private readonly string _encryptKey;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public JwtMiddleware(RequestDelegate next, IConfiguration configuration)
+    public JwtMiddleware(RequestDelegate next, IConfiguration configuration, IServiceScopeFactory scopeFactory)
     {
         _next = next;
         _secretKey = configuration["Jwt:SecretKey"];
         _encryptKey = configuration["Jwt:EncryptKey"];
+        _scopeFactory = scopeFactory;
     }
 
     public async Task Invoke(HttpContext context)
@@ -36,27 +35,52 @@ public class JwtMiddleware
     {
         try
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var decryptionKey = Encoding.UTF8.GetBytes(_encryptKey);
-            var signingKey = Encoding.UTF8.GetBytes(_secretKey);
-
-            var tokenValidationParameters = new TokenValidationParameters
+            using (var scope = _scopeFactory.CreateScope())
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(signingKey),
-                TokenDecryptionKey = new SymmetricSecurityKey(decryptionKey),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
-            };
+                var userRepositoryService = scope.ServiceProvider.GetRequiredService<IUserRepositoryService>();
 
-            tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var decryptionKey = Encoding.UTF8.GetBytes(_encryptKey);
+                var signingKey = Encoding.UTF8.GetBytes(_secretKey);
 
-            var jwtToken = validatedToken as JwtSecurityToken;
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(signingKey),
+                    TokenDecryptionKey = new SymmetricSecurityKey(decryptionKey),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+
+                var jwtToken = validatedToken as JwtSecurityToken;
+
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value.ToInt() ?? 0;
+
+                var securityStampFromToken = jwtToken.Claims.FirstOrDefault(c => c.Type == "SecurityStamp")?.Value;
+
+                if (userId == 0 || securityStampFromToken == null)
+                    throw new UnauthorizedAccessException();
+
+                var cachedUser = userRepositoryService.Get(userId);
+                if (cachedUser != null)
+                {
+                    if (cachedUser.SecurityStamp != securityStampFromToken)
+                        throw new UnauthorizedAccessException();
+                }
+                else
+                {
+                    var user = userRepositoryService.Add(userId);
+                    if (user == null || user.SecurityStamp != securityStampFromToken)
+                        throw new UnauthorizedAccessException();
+                }
+            }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
+            throw new UnauthorizedAccessException();
         }
     }
-
 }

@@ -1,5 +1,6 @@
 ﻿using Business.Dictionaries;
 using Business.Users;
+using Common.CacheManager;
 using Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -90,11 +91,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
+app.UseMiddleware<CustomExceptionHandlerMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<JwtMiddleware>();
-app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
 app.MapControllers();
 
@@ -103,5 +105,5 @@ using (var scope = app.Services.CreateScope())
     var dictionaryService = scope.ServiceProvider.GetRequiredService<IDictionaryService>();
     await dictionaryService.SeedDictionaryData();
 }
-
+CacheManager.Initialize(CacheType.MemoryCache, builder.Configuration);
 app.Run();

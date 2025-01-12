@@ -11,6 +11,7 @@ namespace Entities.ViewModel.Users
     {
         public string UserName { get; set; }
         public string NickName { get; set; }
+        public string SecurityStamp { get; set; }
         public int Id { get; set; }
     }
 }
