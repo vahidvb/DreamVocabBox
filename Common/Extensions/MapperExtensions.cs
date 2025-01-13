@@ -8,7 +8,7 @@ namespace Common.Extensions
     {
         public static TDestination MapTo<TDestination>(this object source) where TDestination : new()
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (source == null) return default;
             TDestination destination = new TDestination();
             PropertyInfo[] sourceProperties = source.GetType().GetProperties();
             PropertyInfo[] destinationProperties = typeof(TDestination).GetProperties();

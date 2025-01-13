@@ -81,17 +81,16 @@ namespace Business.Vocabularies
                 .FirstOrDefaultAsync(x => x.UserId == form.UserId &&
                                           x.BoxNumber == form.BoxNumber &&
                                           x.LastSeenDateTime < calculatedScenario.ThresholdDate);
-
+            if (res == null) return null;
             var result = res.MapTo<RVocabularyChecking>();
             result.RemainCount = await DataBase.Vocabularies
                 .CountAsync(x => x.UserId == form.UserId &&
                                           x.BoxNumber == form.BoxNumber &&
                                           x.LastSeenDateTime < calculatedScenario.ThresholdDate);
-            if (res != null)
-            {
-                res.Word = res.Word?.ToPascalCase();
-                res.Meaning = res.Meaning.ToUppercaseFirst();
-            }
+
+            result.Word = result.Word.ToPascalCase();
+            result.Meaning = result.Meaning.ToUppercaseFirst();
+
             return result;
         }
 
@@ -155,7 +154,7 @@ namespace Business.Vocabularies
                 TotalItem = totalCount
             };
         }
-        private RScenarioCalculated CalculateScenario(UserBoxScenarioEnum userBoxScenario,int BoxNumber)
+        private RScenarioCalculated CalculateScenario(UserBoxScenarioEnum userBoxScenario, int BoxNumber)
         {
             var thresholdDate = DateTime.Now;
             float days = 1;
@@ -178,8 +177,8 @@ namespace Business.Vocabularies
             }
             return new RScenarioCalculated()
             {
-                ThresholdDate=thresholdDate,
-                Days=days,
+                ThresholdDate = thresholdDate,
+                Days = days,
             };
         }
         public async Task<List<RVocabularyBox>> GetVocabulariesBoxes(int UserId)
@@ -189,8 +188,8 @@ namespace Business.Vocabularies
             for (int BoxNumber = 1; BoxNumber <= 7; BoxNumber++)
             {
                 var calculatedScenario = CalculateScenario(user.BoxScenario, BoxNumber);
-               
-                
+
+
                 var all = await DataBase.Vocabularies.Where(x => x.UserId == UserId && x.BoxNumber == BoxNumber).ToListAsync();
 
                 result.Add(new RVocabularyBox
