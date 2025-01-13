@@ -6,8 +6,8 @@ namespace Service.Vocabularies
 {
     public interface IVocabularyService
     {
-        Task<Vocabulary> SetVocabularyCheck(FSetVocabularyCheck form);
-        Task<Vocabulary> GetUnCheckedVocabulary(FGetUnCheckedVocabulary form);
+        Task<RVocabularyChecking> SetVocabularyCheck(FSetVocabularyCheck form);
+        Task<RVocabularyChecking> GetUnCheckedVocabulary(FGetUnCheckedVocabulary form);
         Task<RVocabularyPagination> GetVocabulariesPagination(FGetVocabularyPagination form);
         Task<List<RVocabularyBox>> GetVocabulariesBoxes(int UserId);
         Task AddVocabulary(FAddEditVocabulary form);

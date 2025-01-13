@@ -2,7 +2,9 @@
 using Common.Api;
 using Common.Extensions;
 using Data;
+using Entities.Enum.Users;
 using Entities.Form.Vocabularies;
+using Entities.Model.Users;
 using Entities.Model.Vocabularies;
 using Entities.Response.Vocabularies;
 using Microsoft.EntityFrameworkCore;
@@ -71,22 +73,29 @@ namespace Business.Vocabularies
             await DataBase.SaveChangesAsync();
         }
 
-        private async Task<Vocabulary?> GetUnCheckedVocabularyMethod(FGetUnCheckedVocabulary form)
+        private async Task<RVocabularyChecking?> GetUnCheckedVocabularyMethod(FGetUnCheckedVocabulary form)
         {
-            var thresholdDate = DateTime.Now.AddDays(-1 * form.BoxNumber);
+            var user = userRepositoryService.Get(form.UserId);
+            var calculatedScenario = CalculateScenario(user.BoxScenario, form.BoxNumber);
             var res = await DataBase.Vocabularies
                 .FirstOrDefaultAsync(x => x.UserId == form.UserId &&
                                           x.BoxNumber == form.BoxNumber &&
-                                          x.LastSeenDateTime < thresholdDate);
+                                          x.LastSeenDateTime < calculatedScenario.ThresholdDate);
+
+            var result = res.MapTo<RVocabularyChecking>();
+            result.RemainCount = await DataBase.Vocabularies
+                .CountAsync(x => x.UserId == form.UserId &&
+                                          x.BoxNumber == form.BoxNumber &&
+                                          x.LastSeenDateTime < calculatedScenario.ThresholdDate);
             if (res != null)
             {
                 res.Word = res.Word?.ToPascalCase();
                 res.Meaning = res.Meaning.ToUppercaseFirst();
             }
-            return res;
+            return result;
         }
 
-        public async Task<Vocabulary> GetUnCheckedVocabulary(FGetUnCheckedVocabulary form)
+        public async Task<RVocabularyChecking> GetUnCheckedVocabulary(FGetUnCheckedVocabulary form)
         {
             var res = await GetUnCheckedVocabularyMethod(form);
 
@@ -96,7 +105,7 @@ namespace Business.Vocabularies
             return res;
         }
 
-        public async Task<Vocabulary> SetVocabularyCheck(FSetVocabularyCheck form)
+        public async Task<RVocabularyChecking> SetVocabularyCheck(FSetVocabularyCheck form)
         {
             var vocabulary = await DataBase.Vocabularies.FirstOrDefaultAsync(x => x.Id == form.VocabularyId.ToGuid() && x.UserId == form.UserId);
             if (vocabulary == null)
@@ -146,30 +155,41 @@ namespace Business.Vocabularies
                 TotalItem = totalCount
             };
         }
+        private RScenarioCalculated CalculateScenario(UserBoxScenarioEnum userBoxScenario,int BoxNumber)
+        {
+            var thresholdDate = DateTime.Now;
+            float days = 1;
+
+            switch (userBoxScenario)
+            {
+                case Entities.Enum.Users.UserBoxScenarioEnum.HalfDayBox:
+                    thresholdDate = DateTime.Now.AddHours(-12);
+                    days = 0.5f;
+                    break;
+                case Entities.Enum.Users.UserBoxScenarioEnum.DailyBox:
+                default:
+                    thresholdDate = DateTime.Now.AddDays(-1);
+                    days = 1;
+                    break;
+                case Entities.Enum.Users.UserBoxScenarioEnum.BoxNumberDays:
+                    thresholdDate = DateTime.Now.AddDays(-1 * BoxNumber);
+                    days = BoxNumber;
+                    break;
+            }
+            return new RScenarioCalculated()
+            {
+                ThresholdDate=thresholdDate,
+                Days=days,
+            };
+        }
         public async Task<List<RVocabularyBox>> GetVocabulariesBoxes(int UserId)
         {
             var result = new List<RVocabularyBox>();
             var user = userRepositoryService.Get(UserId);
             for (int BoxNumber = 1; BoxNumber <= 7; BoxNumber++)
             {
-                float days = 1;
-                var thresholdDate = DateTime.Now;
-                switch (user.BoxScenario)
-                {
-                    case Entities.Enum.Users.UserBoxScenarioEnum.HalfDayBox:
-                        thresholdDate = DateTime.Now.AddHours(-12);
-                        days = 0.5f;
-                        break;
-                    case Entities.Enum.Users.UserBoxScenarioEnum.DailyBox:
-                    default:
-                        thresholdDate = DateTime.Now.AddDays(-1);
-                        days = 1;
-                        break;
-                    case Entities.Enum.Users.UserBoxScenarioEnum.BoxNumberDays:
-                        thresholdDate = DateTime.Now.AddDays(-1 * BoxNumber);
-                        days = BoxNumber;
-                        break;
-                }
+                var calculatedScenario = CalculateScenario(user.BoxScenario, BoxNumber);
+               
                 
                 var all = await DataBase.Vocabularies.Where(x => x.UserId == UserId && x.BoxNumber == BoxNumber).ToListAsync();
 
@@ -177,9 +197,9 @@ namespace Business.Vocabularies
                 {
                     AllCount = all.Count(),
                     BoxNumber = BoxNumber,
-                    CheckedCount = all.Count(x => x.LastSeenDateTime > thresholdDate),
-                    UnCheckedCount = all.Count(x => x.LastSeenDateTime < thresholdDate),
-                    SoonTime = all.Where(x => x.LastSeenDateTime > thresholdDate).OrderBy(x => x.LastSeenDateTime).FirstOrDefault()?.LastChangeDate.ToNotNullable().AddDays(days).ToHumanReadableTime("dhm") ?? "",
+                    CheckedCount = all.Count(x => x.LastSeenDateTime > calculatedScenario.ThresholdDate),
+                    UnCheckedCount = all.Count(x => x.LastSeenDateTime < calculatedScenario.ThresholdDate),
+                    SoonTime = all.Where(x => x.LastSeenDateTime > calculatedScenario.ThresholdDate).OrderBy(x => x.LastSeenDateTime).FirstOrDefault()?.LastChangeDate.ToNotNullable().AddDays(calculatedScenario.Days).ToHumanReadableTime("dhm") ?? "",
                 });
             }
             return result;
