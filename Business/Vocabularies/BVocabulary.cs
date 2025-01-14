@@ -62,9 +62,6 @@ namespace Business.Vocabularies
             if (vocabulary.UserId != form.UserId)
                 throw new AppException(ApiResultStatusCode.DontAllowAccessThisResource);
 
-            if (vocabulary.Word != form.Word)
-                throw new AppException(ApiResultStatusCode.VocabularyCantEditWord);
-
             vocabulary.Meaning = form.Meaning;
             vocabulary.Description = form.Description;
             vocabulary.Example = form.Example;

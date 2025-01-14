@@ -21,7 +21,7 @@ namespace Common.Extensions
             var words = input.Split(new char[] { ' ', '-', '_', '.' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < words.Length; i++)
                 words[i] = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(words[i].ToLower());
-            return string.Join("", words);
+            return string.Join(" ", words);
         }
         public static bool IsEmpty(this string value) => value == null || value.Trim() == "";
         public static Guid ToGuid(this string value) => new Guid(value);
