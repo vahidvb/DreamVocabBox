@@ -25,7 +25,7 @@ namespace Business.Dictionaries
                                         orderby Guid.NewGuid()
                                         select d)
                                         .FirstOrDefaultAsync();
-            
+
             if (dictionaryWord == null)
                 throw new AppException(ApiResultStatusCode.NotFound);
 
@@ -37,10 +37,21 @@ namespace Business.Dictionaries
         }
         public async Task<REnglishPersian> FindEnglish(string input)
         {
-            var en = await DataBase.DictionaryEnglishToEnglishs.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input.ToLower()));
-            var fa = await DataBase.DictionaryEnglishToPersians.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input.ToLower()));
+            input = input.ToLowerTrim();
+            var en = await DataBase.DictionaryEnglishToEnglishs.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(input));
+
+            if (en == null)
+                en = DataBase.DictionaryEnglishToEnglishs
+                        .Where(d => d.Forms != null)
+                        .AsEnumerable()
+                        .Where(x => x.Forms.ToList<string>().Any(y => y.ToLowerTrim() == input))
+                        .FirstOrDefault();
+
+            var fa = await DataBase.DictionaryEnglishToPersians.FirstOrDefaultAsync(x => x.Word.ToLower().Equals(en != null ? en.Word.ToLower() : input));
+
             if (en == null && fa == null)
                 throw new AppException(ApiResultStatusCode.NotFound);
+
             return new REnglishPersian()
             {
                 Word = input,

@@ -6,6 +6,7 @@ namespace Common.Extensions
 {
     public static class StringExtensions
     {
+        public static string ToLowerTrim(this string input) => input.ToLower().Trim();
         public static string ToUppercaseFirst(this string input)
         {
             if (string.IsNullOrWhiteSpace(input))
