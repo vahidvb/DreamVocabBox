@@ -22,6 +22,8 @@ namespace Business.Vocabularies
 
         public async Task AddVocabulary(FAddEditVocabulary form)
         {
+            form.Word.ToLowerTrim();
+
             if (form.Word.IsEmpty())
                 throw new AppException(ApiResultStatusCode.VocabularyWordMeaningIsRequied);
 
