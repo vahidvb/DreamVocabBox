@@ -102,5 +102,8 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("No changes were found in your request")]
         NoChangesFound = 32,
+
+        [CustomDisplayStatusAttribute("The specified user does not exist in Repository")]
+        UserNotExistInRepository = 33,
     }
 }

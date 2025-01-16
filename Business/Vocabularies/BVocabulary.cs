@@ -73,6 +73,10 @@ namespace Business.Vocabularies
         private async Task<RVocabularyChecking?> GetUnCheckedVocabularyMethod(FGetUnCheckedVocabulary form)
         {
             var user = userRepositoryService.Get(form.UserId);
+
+            if (user == null)
+                throw new AppException(ApiResultStatusCode.UserNotExistInRepository);
+
             var calculatedScenario = CalculateScenario(user.BoxScenario, form.BoxNumber);
             var res = await DataBase.Vocabularies
                 .FirstOrDefaultAsync(x => x.UserId == form.UserId &&
@@ -182,6 +186,10 @@ namespace Business.Vocabularies
         {
             var result = new List<RVocabularyBox>();
             var user = userRepositoryService.Get(UserId);
+
+            if (user == null)
+                throw new AppException(ApiResultStatusCode.UserNotExistInRepository);
+
             for (int BoxNumber = 1; BoxNumber <= 7; BoxNumber++)
             {
                 var calculatedScenario = CalculateScenario(user.BoxScenario, BoxNumber);
