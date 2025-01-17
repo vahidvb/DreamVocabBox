@@ -1,6 +1,7 @@
 ﻿using Entities.Model.Dictionaries;
 using Entities.Model.Users;
 using Entities.Model.Vocabularies;
+using Entities.Model.VocabularyChecks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -18,6 +19,7 @@ namespace Data
         public DbSet<DictionaryPersianToEnglish> DictionaryPersianToEnglishs { get; set; }
         public DbSet<DictionaryEnglishToEnglish> DictionaryEnglishToEnglishs { get; set; }
         public DbSet<IdiomsEnglishToPersian> IdiomsEnglishToPersians { get; set; }
+        public DbSet<VocabularyCheck> VocabularyChecks { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

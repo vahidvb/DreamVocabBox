@@ -6,11 +6,13 @@ using Entities.Enum.Users;
 using Entities.Form.Vocabularies;
 using Entities.Model.Users;
 using Entities.Model.Vocabularies;
+using Entities.Model.VocabularyChecks;
 using Entities.Response.Vocabularies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Service.Users;
 using Service.Vocabularies;
+using Service.VocabularyChecks;
 
 namespace Business.Vocabularies
 {
@@ -113,11 +115,23 @@ namespace Business.Vocabularies
             if (vocabulary == null)
                 throw new AppException(ApiResultStatusCode.VocabularyCantFind);
 
+            var vocabularyCheck = new VocabularyCheck()
+            {
+                UserId = form.UserId,
+                VocabularyId = vocabulary.Id,
+                Learned = form.Learned,
+                BoxNumber = vocabulary.BoxNumber,
+            };
+
+            await DataBase.VocabularyChecks.AddAsync(vocabularyCheck);
+
             var lastBoxNumber = vocabulary.BoxNumber;
             vocabulary.LastSeenDateTime = DateTime.Now;
             vocabulary.BoxNumber = form.Learned && vocabulary.BoxNumber < 7 ? vocabulary.BoxNumber + 1 : (!form.Learned && vocabulary.BoxNumber > 1 ? vocabulary.BoxNumber - 1 : vocabulary.BoxNumber);
+            vocabulary.SeenCount++;
 
             DataBase.Vocabularies.Update(vocabulary);
+
             await DataBase.SaveChangesAsync();
 
             var res = await GetUnCheckedVocabularyMethod(new FGetUnCheckedVocabulary() { BoxNumber = lastBoxNumber, UserId = form.UserId });
