@@ -1,5 +1,4 @@
 ﻿using Entities.Enum.Users;
-using SecurityDriven;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Model.Users
@@ -21,7 +20,7 @@ namespace Entities.Model.Users
         public UserBoxScenarioEnum BoxScenario { get; set; }
         public User()
         {
-            SecurityStamp = FastGuid.NewGuid();
+            SecurityStamp = Guid.NewGuid();
             Role = "User";
             Avatar = 1;
             BoxScenario = UserBoxScenarioEnum.DailyBox;
