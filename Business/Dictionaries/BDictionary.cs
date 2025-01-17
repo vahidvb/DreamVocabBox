@@ -7,6 +7,7 @@ using Entities.Response.Dictionaries;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using SecurityDriven;
 
 namespace Business.Dictionaries
 {
@@ -22,7 +23,7 @@ namespace Business.Dictionaries
                                         on d.Word.ToLower() equals v.Word.ToLower() into vocabGroup
                                         from vg in vocabGroup.DefaultIfEmpty()
                                         where vg == null || vg.UserId != UserId
-                                        orderby Guid.NewGuid()
+                                        orderby FastGuid.NewGuid()
                                         select d)
                                         .FirstOrDefaultAsync();
 
