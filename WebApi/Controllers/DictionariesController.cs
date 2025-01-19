@@ -12,9 +12,9 @@ namespace WebApi.Controllers
     public class DictionariesController(IDictionaryService service) : BaseController<IDictionaryService>(service)
     {
         [HttpPost]
-        public async Task<ApiResult<List<DictionaryEnglishToEnglish>>> SearchEnglishToEnglish([FromBody] string input)
+        public async Task<ApiResult<List<string>>> GetSimilarWords([FromBody] string input)
         {
-            return new ApiResult<List<DictionaryEnglishToEnglish>>(await service.SearchEnglishToEnglish(input,10));
+            return new ApiResult<List<string>>(await service.GetSimilarWords(input,10));
         }
         [HttpPost]
         public async Task<ApiResult<REnglishPersian>> FindEnglish([FromBody] string input)

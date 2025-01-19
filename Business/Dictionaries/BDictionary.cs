@@ -60,9 +60,9 @@ namespace Business.Dictionaries
                 Forms = en?.Forms,
             };
         }
-        public async Task<List<DictionaryEnglishToEnglish>> SearchEnglishToEnglish(string input, int length)
+        public async Task<List<string>> GetSimilarWords(string input, int length)
         {
-            return await DataBase.DictionaryEnglishToEnglishs.Where(x => x.Word.ToLower().StartsWith(input)).Take(length).ToListAsync();
+            return await DataBase.DictionaryEnglishToEnglishs.Where(x => x.Word.ToLower().StartsWith(input)).Take(length).Select(x=>x.Word.ToUppercaseFirst()).ToListAsync();
         }
         public async Task SeedDictionaryData()
         {
