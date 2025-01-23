@@ -1,5 +1,7 @@
 ﻿using Entities.Model.Dictionaries;
 using Entities.Model.Friendships;
+using Entities.Model.MessageAttachments;
+using Entities.Model.Messages;
 using Entities.Model.Users;
 using Entities.Model.Vocabularies;
 using Entities.Model.VocabularyChecks;
@@ -22,6 +24,9 @@ namespace Data
         public DbSet<IdiomsEnglishToPersian> IdiomsEnglishToPersians { get; set; }
         public DbSet<VocabularyCheck> VocabularyChecks { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<MessageAttachment> MessageAttachments { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

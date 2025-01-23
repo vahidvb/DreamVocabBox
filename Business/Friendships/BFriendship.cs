@@ -8,12 +8,16 @@ using Entities.ViewModel.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace;
+using Service.Friendships;
 using Service.Users;
+using System.Linq;
 
 namespace Business.Friendships
 {
-    public class BFriendship(DreamVocabBoxContext db, IConfiguration configuration, IUserRepositoryService userRepositoryService) : BaseBusiness(db, configuration, userRepositoryService)
+    public class BFriendship(DreamVocabBoxContext db, IConfiguration configuration, IUserRepositoryService userRepositoryService) : BaseBusiness(db, configuration, userRepositoryService), IFriendshipService
     {
+        private readonly DreamVocabBoxContext db = db;
+
         public async Task RequestFriendship(int senderUserId, int receiverUserId)
         {
             if (senderUserId == receiverUserId)
@@ -53,6 +57,7 @@ namespace Business.Friendships
             if (friendship == null)
                 throw new AppException(ApiResultStatusCode.NotFound);
             friendship.Status = FriendshipStatusEnum.Accepted;
+            db.Friendships.Update(friendship);
             await db.SaveChangesAsync();
         }
         public async Task CancelFriendship(int senderUserId, int receiverUserId)
@@ -61,6 +66,7 @@ namespace Business.Friendships
             if (friendship == null)
                 throw new AppException(ApiResultStatusCode.NotFound);
             friendship.Status = FriendshipStatusEnum.Canceled;
+            db.Friendships.Update(friendship);
             await db.SaveChangesAsync();
         }
         public async Task RejectFriendship(int senderUserId, int receiverUserId)
@@ -72,6 +78,7 @@ namespace Business.Friendships
                 throw new AppException(ApiResultStatusCode.NotFound);
 
             friendship.Status = FriendshipStatusEnum.Rejected;
+            db.Friendships.Update(friendship);
             await db.SaveChangesAsync();
         }
         public async Task BlockFriendship(int blockerUserId, int blockedUserId)
@@ -100,17 +107,18 @@ namespace Business.Friendships
         }
         public async Task DeleteFriendship(int senderUserId, int receiverUserId)
         {
-            var friendship = await db.Friendships.FirstOrDefaultAsync(x => (x.SenderUserId == senderUserId && x.ReceiverUserId == receiverUserId) || (x.SenderUserId == receiverUserId && x.ReceiverUserId == senderUserId));
+            var friendship = await db.Friendships.FirstOrDefaultAsync(x => x.Status == FriendshipStatusEnum.Accepted && ((x.SenderUserId == senderUserId && x.ReceiverUserId == receiverUserId) || (x.SenderUserId == receiverUserId && x.ReceiverUserId == senderUserId)));
             if (friendship == null)
                 throw new AppException(ApiResultStatusCode.NotFound);
             friendship.Status = FriendshipStatusEnum.Deleted;
             friendship.DeleterUserId = senderUserId;
+            db.Friendships.Update(friendship);
             await db.SaveChangesAsync();
         }
         public async Task<List<RFriendship>> GetFriendships(int userId)
         {
             var friendshipIds = await db.Friendships
-                .Where(x => (x.SenderUserId == userId || x.ReceiverUserId == userId) && (x.Status == FriendshipStatusEnum.Accepted || x.Status == FriendshipStatusEnum.Pending))
+                .Where(x => (x.SenderUserId == userId || x.ReceiverUserId == userId) && (x.Status == FriendshipStatusEnum.Accepted || x.Status == FriendshipStatusEnum.Pending)).OrderByDescending(x => x.RegisterDate)
                 .Select(x => new
                 {
                     FriendId = x.SenderUserId == userId ? x.ReceiverUserId : x.SenderUserId,
@@ -128,11 +136,11 @@ namespace Business.Friendships
                 {
                     result.Add(new RFriendship
                     {
-                        Id = friendUser.Id,
+                        UserId = friendUser.Id,
                         NickName = friendUser.NickName,
                         Avatar = friendUser.Avatar,
                         UserName = friendUser.UserName,
-                        Status = friendship.Status,
+                        FriendshipStatus = friendship.Status,
                         IsSentByUser = friendship.IsSentByUser
                     });
                 }
@@ -142,11 +150,11 @@ namespace Business.Friendships
                                     .Where(x => x.Id == friendship.FriendId)
                                     .Select(x => new RFriendship
                                     {
-                                        Id = x.Id,
+                                        UserId = x.Id,
                                         NickName = x.NickName,
                                         Avatar = x.Avatar,
                                         UserName = x.UserName,
-                                        Status = friendship.Status,
+                                        FriendshipStatus = friendship.Status,
                                         IsSentByUser = friendship.IsSentByUser
                                     })
                                     .FirstOrDefaultAsync();

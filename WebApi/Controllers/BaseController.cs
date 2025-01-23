@@ -1,6 +1,7 @@
 ﻿using Common.Api;
 using Common.Extensions;
 using Entities.Model.Users;
+using Entities.Response.Users;
 using Entities.Response.Vocabularies;
 using Entities.ViewModel.Users;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,5 @@
 ﻿using Entities.Enum.Friendships;
+using Entities.Response.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +8,9 @@ using System.Threading.Tasks;
 
 namespace Entities.Response.Friendships
 {
-    public class RFriendship
+    public class RFriendship : RUserPublicInfo
     {
-        public int Id { get; set; }
-        public int Avatar { get; set; }
-        public string UserName { get; set; }
-        public string NickName { get; set; }
-        public FriendshipStatusEnum Status { get; set; }
+        public FriendshipStatusEnum FriendshipStatus { get; set; }
         public bool IsSentByUser { get; set; }
     }
 }

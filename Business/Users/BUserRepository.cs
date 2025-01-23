@@ -1,6 +1,7 @@
 ﻿using Common.CacheManager;
 using Data;
 using Entities.Enum.Users;
+using Entities.Response.Users;
 using Entities.ViewModel.Users;
 using Microsoft.Extensions.Configuration;
 using Service.Users;

@@ -1,4 +1,5 @@
-﻿using Entities.ViewModel.Users;
+﻿using Entities.Response.Users;
+using Entities.ViewModel.Users;
 
 namespace Service.Users
 {

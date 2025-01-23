@@ -6,6 +6,7 @@ namespace Common.Extensions
 {
     public static class ListExtensions
     {
+        public static bool HaveData(this List<object> expressions) => expressions != null && expressions.Any();
         public static string ToCommaSeperated(this List<object> expressions)
         {
             return string.Join(",", expressions);

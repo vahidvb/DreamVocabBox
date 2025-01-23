@@ -105,5 +105,20 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("The specified user does not exist in Repository")]
         UserNotExistInRepository = 33,
+
+        [CustomDisplayStatusAttribute("Friend request sent successfully", true)]
+        FriendRequestSentSuccessfully = 34,
+
+        [CustomDisplayStatusAttribute("Friend request accepted successfully", true)]
+        FriendRequestAcceptedSuccessfully = 35,
+
+        [CustomDisplayStatusAttribute("Friend request cancelled successfully", true)]
+        FriendRequestCancelledSuccessfully = 36,
+
+        [CustomDisplayStatusAttribute("You have unfriended successfully", true)]
+        FriendRequestDeleteSuccessfully = 37,
+
+        [CustomDisplayStatusAttribute("You have rejected request successfully", true)]
+        FriendRequestRejectedSuccessfully = 38,
     }
 }

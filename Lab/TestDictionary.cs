@@ -1,10 +1,17 @@
 ﻿using Business.Dictionaries;
+using Newtonsoft.Json;
 using Xunit.Abstractions;
 
 namespace Lab
 {
     public class TestDictionary : BaseTest<BDictionary>
     {
+        private readonly ITestOutputHelper output;
+        public TestDictionary(ITestOutputHelper output) : base()
+        {
+            this.output = output;
+        }
+
         [Fact]
         public async Task NotFoundWord()
         {

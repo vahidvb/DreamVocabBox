@@ -8,5 +8,6 @@
         Canceled = 3,
         Blocked = 4,
         Deleted = 5,
+        Nothing = 6,
     }
 }

@@ -128,7 +128,7 @@ namespace Data
         private void UpdateLastChangeDateOnEntities()
         {
             var changedBaseEntities = ChangeTracker.Entries()
-                .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
+                .Where(x => x.State == EntityState.Modified);
 
             foreach (var item in changedBaseEntities)
             {
