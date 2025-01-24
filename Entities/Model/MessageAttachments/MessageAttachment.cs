@@ -6,6 +6,7 @@ namespace Entities.Model.MessageAttachments
     {
         public Guid MessageId { get; set; }
         public MessageAttachmentTypeEnum Type { get; set; }
+        public string Title { get; set; }
         public string Value { get; set; }
     }
 }

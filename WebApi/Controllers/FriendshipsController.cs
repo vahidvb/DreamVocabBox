@@ -17,6 +17,11 @@ namespace WebApi.Controllers
             return new ApiResult<List<RFriendship>>(await service.GetFriendships(CurrentUser.Id));
         }
         [HttpPost]
+        public async Task<ApiResult<List<RFriendshipForShare>>> GetFriendsListForShareWord([FromBody] string Vocabulary)
+        {
+            return new ApiResult<List<RFriendshipForShare>>(await service.GetFriendsListForShareWord(CurrentUser.Id,Vocabulary));
+        }
+        [HttpPost]
         public async Task<ApiResult> RequestFriendship([FromBody] int UserId)
         {
             await service.RequestFriendship(CurrentUser.Id, UserId);

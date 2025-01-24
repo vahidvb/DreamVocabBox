@@ -234,7 +234,10 @@ namespace Business.Vocabularies
             if (vocabulary.UserId != form.UserId)
                 throw new AppException(ApiResultStatusCode.DontAllowAccessThisResource);
 
+            var vocabularyChecks = await DataBase.VocabularyChecks.Where(x => x.VocabularyId == form.VocabularyId.ToGuid()).ToListAsync();
+
             DataBase.Vocabularies.Remove(vocabulary);
+            DataBase.VocabularyChecks.RemoveRange(vocabularyChecks);
             await DataBase.SaveChangesAsync();
         }
     }

@@ -5,10 +5,11 @@ using Entities.Model.MessageAttachments;
 using Entities.Model.Messages;
 using Entities.Response.Messages;
 using Microsoft.Extensions.Configuration;
+using Service.Messages;
 using Service.Users;
-namespace Business.MessageAttachments
+namespace Business.Messages
 {
-    public class BMessage(DreamVocabBoxContext db, IConfiguration configuration, IUserRepositoryService userRepositoryService) : BaseBusiness(db, configuration, userRepositoryService)
+    public class BMessage(DreamVocabBoxContext db, IConfiguration configuration, IUserRepositoryService userRepositoryService) : BaseBusiness(db, configuration, userRepositoryService), IMessageService
     {
         public async Task AddMessage(FAddMessage model)
         {
@@ -31,6 +32,7 @@ namespace Business.MessageAttachments
                         MessageId = message.Id,
                         Value = attachment.Value,
                         Type = attachment.Type,
+                        Title = attachment.Title,
                     };
                     db.MessageAttachments.Add(messageAttachment);
                 }

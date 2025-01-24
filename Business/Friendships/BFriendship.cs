@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Api;
+using Common.Extensions;
 using Data;
 using Entities.Enum.Friendships;
 using Entities.Model.Friendships;
@@ -156,6 +157,54 @@ namespace Business.Friendships
                                         UserName = x.UserName,
                                         FriendshipStatus = friendship.Status,
                                         IsSentByUser = friendship.IsSentByUser
+                                    })
+                                    .FirstOrDefaultAsync();
+
+                    if (user != null)
+                        result.Add(user);
+                }
+            }
+            return result;
+        }
+        public async Task<List<RFriendshipForShare>> GetFriendsListForShareWord(int userId, string Vocabulary)
+        {
+            var friendshipIds = await db.Friendships
+                .Where(x => (x.SenderUserId == userId || x.ReceiverUserId == userId) && (x.Status == FriendshipStatusEnum.Accepted)).OrderByDescending(x => x.RegisterDate)
+                .Select(x => new
+                {
+                    FriendId = x.SenderUserId == userId ? x.ReceiverUserId : x.SenderUserId,
+                    x.Status
+                }
+                )
+                .ToListAsync();
+
+            var result = new List<RFriendshipForShare>();
+            foreach (var friendship in friendshipIds)
+            {
+                var AddedVocabulary = await DataBase.Vocabularies.AnyAsync(v => v.Word.ToLower() == Vocabulary.ToLowerTrim() && v.UserId == friendship.FriendId);
+                var friendUser = userRepositoryService.Get(friendship.FriendId);
+                if (friendUser != null)
+                {
+                    result.Add(new RFriendshipForShare
+                    {
+                        UserId = friendUser.Id,
+                        NickName = friendUser.NickName,
+                        Avatar = friendUser.Avatar,
+                        UserName = friendUser.UserName,
+                        AddedVocabulary = AddedVocabulary,
+                    });
+                }
+                else
+                {
+                    var user = await db.Users
+                                    .Where(x => x.Id == friendship.FriendId)
+                                    .Select(x => new RFriendshipForShare
+                                    {
+                                        UserId = x.Id,
+                                        NickName = x.NickName,
+                                        Avatar = x.Avatar,
+                                        UserName = x.UserName,
+                                        AddedVocabulary = AddedVocabulary,
                                     })
                                     .FirstOrDefaultAsync();
 

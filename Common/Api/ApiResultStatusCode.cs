@@ -120,5 +120,8 @@ namespace Common.Api
 
         [CustomDisplayStatusAttribute("You have rejected request successfully", true)]
         FriendRequestRejectedSuccessfully = 38,
+
+        [CustomDisplayStatusAttribute("Message sent successfully", true)]
+        MessageSentSuccessfully = 39,
     }
 }
