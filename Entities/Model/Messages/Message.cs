@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.Model.MessageAttachments;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,7 @@ namespace Entities.Model.Messages
         public required string Content { get; set; }
         public DateTime? ReadAt { get; set; }
         public string? Reaction { get; set; }
+
+        public ICollection<MessageAttachment> MessageAttachments { get; set; }
     }
 }

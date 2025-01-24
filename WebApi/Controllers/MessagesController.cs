@@ -14,6 +14,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ApiResult> AddMessage(FAddMessage form)
         {
+            form.SenderUserId = CurrentUser.Id;
             await service.AddMessage(form);
             return new ApiResult(ApiResultStatusCode.MessageSentSuccessfully);
         }

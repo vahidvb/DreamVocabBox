@@ -32,7 +32,6 @@ namespace Business.Messages
                         MessageId = message.Id,
                         Value = attachment.Value,
                         Type = attachment.Type,
-                        Title = attachment.Title,
                     };
                     db.MessageAttachments.Add(messageAttachment);
                 }

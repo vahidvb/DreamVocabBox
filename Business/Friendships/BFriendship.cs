@@ -182,6 +182,11 @@ namespace Business.Friendships
             foreach (var friendship in friendshipIds)
             {
                 var AddedVocabulary = await DataBase.Vocabularies.AnyAsync(v => v.Word.ToLower() == Vocabulary.ToLowerTrim() && v.UserId == friendship.FriendId);
+                if (!AddedVocabulary)
+                    AddedVocabulary =
+                        await DataBase.Messages.AsNoTracking().AnyAsync(m => m.ReceiverUserId == friendship.FriendId &&
+                                m.MessageAttachments.Any(a => a.Type == Entities.Enum.MessageAttachments.MessageAttachmentTypeEnum.Vocabulary && a.Value.ToLower() == Vocabulary.ToLowerTrim()));
+
                 var friendUser = userRepositoryService.Get(friendship.FriendId);
                 if (friendUser != null)
                 {
