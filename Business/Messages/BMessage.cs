@@ -1,9 +1,13 @@
-﻿using Data;
+﻿using Common.Extensions;
+using Data;
 using Entities.Form.MessageAttachments;
 using Entities.Form.Messages;
 using Entities.Model.MessageAttachments;
 using Entities.Model.Messages;
+using Entities.Model.Users;
+using Entities.Model.Vocabularies;
 using Entities.Response.Messages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Service.Messages;
 using Service.Users;
@@ -20,8 +24,8 @@ namespace Business.Messages
                 Content = model.Content,
             };
 
-            db.Messages.Add(message);
-            await db.SaveChangesAsync();
+            DataBase.Messages.Add(message);
+            await DataBase.SaveChangesAsync();
 
             if (model.Attachments != null && model.Attachments.Count > 0 && message.Id != Guid.Empty)
             {
@@ -33,14 +37,74 @@ namespace Business.Messages
                         Value = attachment.Value,
                         Type = attachment.Type,
                     };
-                    db.MessageAttachments.Add(messageAttachment);
+                    DataBase.MessageAttachments.Add(messageAttachment);
                 }
-                await db.SaveChangesAsync();
+                await DataBase.SaveChangesAsync();
             }
         }
         public async Task<RVocabularyMessagePagination<dynamic>> GetMessageAsync(FGetMessagePagination form)
         {
             return null;
+        }
+        public async Task<RMessagesListPagination> GetMessagesListAsync(FGetMessagePagination form)
+        {
+            var messages = await DataBase.Messages
+                .Where(m => m.ReceiverUserId == form.UserId || m.SenderUserId == form.UserId)
+                .GroupBy(m => new
+                {
+                    User1 = m.SenderUserId < m.ReceiverUserId ? m.SenderUserId : m.ReceiverUserId,
+                    User2 = m.SenderUserId < m.ReceiverUserId ? m.ReceiverUserId : m.SenderUserId
+                })
+                .Select(g => g.OrderByDescending(m => m.RegisterDate).FirstOrDefault())
+                .Skip(form.ListPosition)
+                .Take(form.ListLength)
+                .ToListAsync();
+
+            var result = new List<RMessagesList>();
+            foreach (var x in messages)
+            {
+                var UserId = x.SenderUserId == form.UserId ? x.ReceiverUserId : x.SenderUserId;
+                var UserInRepository = userRepositoryService.Get(UserId);
+                var messageAttachments = await DataBase.MessageAttachments.Where(xx => xx.MessageId == x.Id).Select(xx => xx.Value ?? "").ToListAsync();
+                if (UserInRepository != null)
+                    result.Add(new RMessagesList()
+                    {
+                        Avatar = UserInRepository.Avatar,
+                        LastMessage = x.Content + (messageAttachments.Count() > 0 ? x.Content != "" ? " | " : "" + messageAttachments.ToCommaSeperated() : ""),
+                        NickName = UserInRepository.NickName,
+                        UserId = UserId,
+                        UserName = UserInRepository.UserName,
+                        UnreadCount = await DataBase.Messages.AsNoTracking().CountAsync(xx=>xx.ReadAt==null && (xx.ReceiverUserId == form.UserId && xx.SenderUserId == UserId)),
+                    });
+                else
+                {
+                    var user = await DataBase.Users.FirstOrDefaultAsync(xx => xx.Id == UserId);
+                    result.Add(new RMessagesList()
+                    {
+                        Avatar = user.Avatar,
+                        LastMessage = x.Content + (messageAttachments.Count() > 0 ? x.Content != "" ? " | " : "" + messageAttachments.ToCommaSeperated() : ""),
+                        NickName = user.NickName,
+                        UserId = UserId,
+                        UserName = user.UserName,
+                        UnreadCount = await DataBase.Messages.AsNoTracking().CountAsync(xx => xx.ReadAt == null && (xx.ReceiverUserId == form.UserId && xx.SenderUserId == UserId)),
+                    });
+                }
+            }
+
+            var totalMessages = await DataBase.Messages.AsNoTracking()
+                .Where(m => m.ReceiverUserId == form.UserId || m.SenderUserId == form.UserId)
+                 .GroupBy(m => new { m.SenderUserId, m.ReceiverUserId }).CountAsync();
+
+
+
+            return new RMessagesListPagination
+            {
+                Items = result,
+                CurrentPage = form.ListPosition / form.ListLength + 1,
+                TotalPage = (int)Math.Ceiling((double)totalMessages / form.ListLength),
+                PageSize = form.ListLength,
+                TotalItem = totalMessages
+            };
         }
 
     }

@@ -338,8 +338,10 @@ namespace Business.Users
         {
             var user = userRepositoryService.Get(UserId);
             var res = user.MapTo<RUserProfile>();
-            var friendshipPending = await DataBase.Friendships.CountAsync(f => f.ReceiverUserId == UserId && f.Status == FriendshipStatusEnum.Pending);
+            var friendshipPending = await DataBase.Friendships.AsNoTracking().CountAsync(f => f.ReceiverUserId == UserId && f.Status == FriendshipStatusEnum.Pending);
             res.FriendshipPending = friendshipPending;
+            var messagesUnread = await DataBase.Messages.AsNoTracking().CountAsync(f => f.ReceiverUserId == UserId && f.ReadAt == null);
+            res.MessagesUnread = messagesUnread;
             res.Scenarios = await GetScenarios();
             return res;
         }
