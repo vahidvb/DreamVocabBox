@@ -43,7 +43,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DictionaryEnglishToEnglishs");
+                    b.ToTable("DictionaryEnglishToEnglishs", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.Dictionaries.DictionaryEnglishToPersian", b =>
@@ -64,7 +64,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DictionaryEnglishToPersians");
+                    b.ToTable("DictionaryEnglishToPersians", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.Dictionaries.DictionaryPersianToEnglish", b =>
@@ -85,7 +85,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DictionaryPersianToEnglishs");
+                    b.ToTable("DictionaryPersianToEnglishs", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.Dictionaries.IdiomsEnglishToPersian", b =>
@@ -110,7 +110,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IdiomsEnglishToPersians");
+                    b.ToTable("IdiomsEnglishToPersians", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.Friendships.Friendship", b =>
@@ -144,7 +144,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Friendships");
+                    b.ToTable("Friendships", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.MessageAttachments.MessageAttachment", b =>
@@ -176,7 +176,7 @@ namespace Data.Migrations
 
                     b.HasIndex("MessageId");
 
-                    b.ToTable("MessageAttachments");
+                    b.ToTable("MessageAttachments", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.Messages.Message", b =>
@@ -212,7 +212,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.Users.User", b =>
@@ -268,7 +268,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.Vocabularies.Vocabulary", b =>
@@ -314,7 +314,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vocabularies");
+                    b.ToTable("Vocabularies", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.VocabularyChecks.VocabularyCheck", b =>
@@ -346,7 +346,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VocabularyChecks");
+                    b.ToTable("VocabularyChecks", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Model.MessageAttachments.MessageAttachment", b =>

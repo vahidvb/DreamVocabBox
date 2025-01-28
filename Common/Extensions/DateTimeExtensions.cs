@@ -85,6 +85,41 @@ namespace Common.Extensions
 
             return string.Join(" and ", parts);
         }
+        public static string ToAutoHumanReadableTime(this DateTime targetTime, DateTime? fromTime = null)
+        {
+            if (fromTime == null)
+                fromTime = DateTime.Now;
+
+            TimeSpan delta = targetTime - fromTime.Value;
+            int totalSeconds = Math.Abs((int)delta.TotalSeconds);
+
+            if (totalSeconds < 60)
+                return "Just now";
+
+            int minutes = totalSeconds / 60;
+            if (minutes < 60)
+                return $"{minutes} minute{(minutes > 1 ? "s" : "")}";
+
+            int hours = minutes / 60;
+            if (hours < 24)
+                return $"{hours} hour{(hours > 1 ? "s" : "")}";
+
+            int days = hours / 24;
+            if (days < 7)
+                return $"{days} day{(days > 1 ? "s" : "")}";
+
+            int weeks = days / 7;
+            if (weeks < 4)
+                return $"{weeks} week{(weeks > 1 ? "s" : "")}";
+
+            int months = weeks / 4;
+            if (months < 12)
+                return $"{months} month{(months > 1 ? "s" : "")}";
+
+            int years = months / 12;
+            return $"{years} year{(years > 1 ? "s" : "")}";
+        }
+
         public static DateTime ToNotNullable(this DateTime? value) => (DateTime)value;
     }
 }

@@ -345,5 +345,30 @@ namespace Business.Users
             res.Scenarios = await GetScenarios();
             return res;
         }
+        public async Task<RUserPublicInfo> GetUserPublic(int UserId)
+        {
+            var user = userRepositoryService.Get(UserId);
+            if (user != null)
+                return new RUserPublicInfo()
+                {
+                    Avatar = user.Avatar,
+                    NickName = user.NickName,
+                    UserId = UserId,
+                    UserName = user.UserName,
+                };
+            else
+            {
+                var dbUser = await DataBase.Users.FirstOrDefaultAsync(x => x.Id == UserId);
+                if (dbUser != null)
+                    return new RUserPublicInfo()
+                    {
+                        Avatar = dbUser.Avatar,
+                        NickName = dbUser.NickName,
+                        UserId = UserId,
+                        UserName = dbUser.UserName,
+                    };
+            }
+            throw new AppException(ApiResultStatusCode.NotFound);
+        }
     }
 }

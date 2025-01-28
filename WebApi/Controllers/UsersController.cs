@@ -31,6 +31,9 @@ namespace WebApi.Controllers
         public async Task<ApiResult<RUserProfile>> GetProfile() => new ApiResult<RUserProfile>(await service.GetProfile(CurrentUser.Id));
 
         [HttpPost]
+        public async Task<ApiResult<RUserPublicInfo>> GetUserPublic([FromBody] int UserId) => new ApiResult<RUserPublicInfo>(await service.GetUserPublic(UserId));
+
+        [HttpPost]
         public async Task<ApiResult<List<RUserBoxScenario>>> GetScenarios() => new ApiResult<List<RUserBoxScenario>>(await service.GetScenarios());
 
         [HttpPost]

@@ -7,6 +7,7 @@ namespace Service.Messages
     public interface IMessageService
     {
         Task AddMessage(FAddMessage model);
-        Task<RMessagesListPagination> GetMessagesListAsync(FGetMessagePagination form);
+        Task<RMessagesListPagination> GetMessagesList(FGetMessagePagination form);
+        Task<RVocabularyMessagePagination> GetMessages(FGetMessagePagination form);
     }
 }

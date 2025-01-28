@@ -25,7 +25,13 @@ namespace WebApi.Controllers
         public async Task<ApiResult<RMessagesListPagination>> GetMessagesList(FGetMessagePagination form)
         {
             form.UserId = CurrentUser.Id;
-            return new ApiResult<RMessagesListPagination>(await service.GetMessagesListAsync(form));
+            return new ApiResult<RMessagesListPagination>(await service.GetMessagesList(form));
+        }
+        [HttpPost]
+        public async Task<ApiResult<RVocabularyMessagePagination>> GetMessages(FGetMessagePagination form)
+        {
+            form.UserId = CurrentUser.Id;
+            return new ApiResult<RVocabularyMessagePagination>(await service.GetMessages(form));
         }
     }
 }

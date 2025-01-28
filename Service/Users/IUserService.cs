@@ -15,4 +15,5 @@ public interface IUserService
     Task<List<RFriendship>> SearchUsers(string SearchText, int UserId);
     Task<RUserProfileStatics> GetUserProfileStatics(int  UserId);
     Task<RUserProfile> GetProfile(int UserId);
+    Task<RUserPublicInfo> GetUserPublic(int UserId);
 }

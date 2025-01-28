@@ -15,6 +15,6 @@ namespace Service.Friendships
         Task CancelFriendship(int senderUserId, int receiverUserId);
         Task DeleteFriendship(int senderUserId, int receiverUserId);
         Task RejectFriendship(int senderUserId, int receiverUserId);
-        Task<List<RFriendshipForShare>> GetFriendsListForShareWord(int userId, string Vocabulary);
+        Task<List<RFriendshipForShare>> GetFriendsListForShareWord(int userId, List<string> Vocabularies);
     }
 }

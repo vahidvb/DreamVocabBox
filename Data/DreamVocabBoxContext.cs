@@ -31,7 +31,14 @@ namespace Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Message>()
+                    .HasMany(m => m.MessageAttachments) 
+                    .WithOne(a => a.Message)            
+                    .HasForeignKey(a => a.MessageId)    
+                    .OnDelete(DeleteBehavior.Cascade); 
             base.OnModelCreating(modelBuilder);
+
+
         }
     }
 }

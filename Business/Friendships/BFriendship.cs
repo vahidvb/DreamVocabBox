@@ -166,7 +166,7 @@ namespace Business.Friendships
             }
             return result;
         }
-        public async Task<List<RFriendshipForShare>> GetFriendsListForShareWord(int userId, string Vocabulary)
+        public async Task<List<RFriendshipForShare>> GetFriendsListForShareWord(int userId, List<string> Vocabularies)
         {
             var friendshipIds = await db.Friendships
                 .Where(x => (x.SenderUserId == userId || x.ReceiverUserId == userId) && (x.Status == FriendshipStatusEnum.Accepted)).OrderByDescending(x => x.RegisterDate)
@@ -181,11 +181,11 @@ namespace Business.Friendships
             var result = new List<RFriendshipForShare>();
             foreach (var friendship in friendshipIds)
             {
-                var AddedVocabulary = await DataBase.Vocabularies.AnyAsync(v => v.Word.ToLower() == Vocabulary.ToLowerTrim() && v.UserId == friendship.FriendId);
+                var AddedVocabulary = await DataBase.Vocabularies.AnyAsync(v => Vocabularies.Any(xx=>xx.ToLower().Trim()== v.Word.ToLower()) && v.UserId == friendship.FriendId);
                 if (!AddedVocabulary)
                     AddedVocabulary =
                         await DataBase.Messages.AsNoTracking().AnyAsync(m => m.ReceiverUserId == friendship.FriendId &&
-                                m.MessageAttachments.Any(a => a.Type == Entities.Enum.MessageAttachments.MessageAttachmentTypeEnum.Vocabulary && a.Value.ToLower() == Vocabulary.ToLowerTrim()));
+                                m.MessageAttachments.Any(a => a.Type == Entities.Enum.MessageAttachments.MessageAttachmentTypeEnum.Vocabulary && Vocabularies.Any(xx => xx.ToLower().Trim() == a.Value.ToLower())));
 
                 var friendUser = userRepositoryService.Get(friendship.FriendId);
                 if (friendUser != null)
