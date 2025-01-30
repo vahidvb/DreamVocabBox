@@ -145,10 +145,10 @@ namespace Business.Vocabularies
 
         public async Task<RVocabularyPagination> GetVocabulariesPagination(FGetVocabularyPagination form)
         {
-            var totalCount = await DataBase.Vocabularies.CountAsync(x => x.UserId == form.UserId && x.BoxNumber == form.BoxNumber);
+            var totalCount = await DataBase.Vocabularies.CountAsync(x => x.UserId == form.UserId && (string.IsNullOrEmpty(form.SearchText) || x.Word.ToLower().Trim().StartsWith(form.SearchText.Trim().ToLower())) && (form.BoxNumber == 0 || x.BoxNumber == form.BoxNumber));
 
             var vocabularies = await DataBase.Vocabularies
-                .Where(x => x.UserId == form.UserId && x.BoxNumber == form.BoxNumber)
+                .Where(x => x.UserId == form.UserId && (string.IsNullOrEmpty(form.SearchText) || x.Word.ToLower().Trim().StartsWith(form.SearchText.Trim().ToLower())) && (form.BoxNumber == 0 || x.BoxNumber == form.BoxNumber))
                 .OrderBy(x => x.LastSeenDateTime)
                 .Skip(form.ListPosition)
                 .Take(form.ListLength)

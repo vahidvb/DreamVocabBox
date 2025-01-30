@@ -22,6 +22,7 @@ namespace Entities.Form.Vocabularies
         public int BoxNumber { get; set; }
         public int ListLength { get; set; }
         public int ListPosition { get; set; }
+        public string? SearchText { get; set; }
     }
     public class FAddEditVocabulary
     {
