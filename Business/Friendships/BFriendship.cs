@@ -3,6 +3,7 @@ using Common.Api;
 using Common.Extensions;
 using Data;
 using Entities.Enum.Friendships;
+using Entities.Enum.MessageAttachments;
 using Entities.Model.Friendships;
 using Entities.Response.Friendships;
 using Entities.ViewModel.Users;
@@ -181,11 +182,26 @@ namespace Business.Friendships
             var result = new List<RFriendshipForShare>();
             foreach (var friendship in friendshipIds)
             {
-                var AddedVocabulary = await DataBase.Vocabularies.AnyAsync(v => Vocabularies.Any(xx=>xx.ToLower().Trim()== v.Word.ToLower()) && v.UserId == friendship.FriendId);
-                if (!AddedVocabulary)
-                    AddedVocabulary =
-                        await DataBase.Messages.AsNoTracking().AnyAsync(m => m.ReceiverUserId == friendship.FriendId &&
-                                m.MessageAttachments.Any(a => a.Type == Entities.Enum.MessageAttachments.MessageAttachmentTypeEnum.Vocabulary && Vocabularies.Any(xx => xx.ToLower().Trim() == a.Value.ToLower())));
+                var vocabs = await DataBase.Vocabularies
+                    .AsNoTracking()
+                    .Where(v => v.UserId == friendship.FriendId)
+                    .Select(v => v.Word.ToLower().Trim())
+                    .ToListAsync();
+
+                var messageVocabs = await DataBase.Messages
+                    .AsNoTracking()
+                    .Where(m => m.ReceiverUserId == friendship.FriendId &&
+                                m.MessageAttachments.Any(a => a.Type == MessageAttachmentTypeEnum.Vocabulary))
+                    .SelectMany(m => m.MessageAttachments
+                        .Where(a => a.Type == MessageAttachmentTypeEnum.Vocabulary)
+                        .Select(a => a.Value.ToLower().Trim()))
+                    .ToListAsync();
+
+                var allVocabs = new HashSet<string>(vocabs.Concat(messageVocabs));
+
+                var addedVocabulary = Vocabularies.All(v => allVocabs.Contains(v.ToLower().Trim()));
+
+
 
                 var friendUser = userRepositoryService.Get(friendship.FriendId);
                 if (friendUser != null)
@@ -196,7 +212,7 @@ namespace Business.Friendships
                         NickName = friendUser.NickName,
                         Avatar = friendUser.Avatar,
                         UserName = friendUser.UserName,
-                        AddedVocabulary = AddedVocabulary,
+                        AddedVocabulary = addedVocabulary,
                     });
                 }
                 else
@@ -209,7 +225,7 @@ namespace Business.Friendships
                                         NickName = x.NickName,
                                         Avatar = x.Avatar,
                                         UserName = x.UserName,
-                                        AddedVocabulary = AddedVocabulary,
+                                        AddedVocabulary = addedVocabulary,
                                     })
                                     .FirstOrDefaultAsync();
 

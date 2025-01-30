@@ -6,5 +6,6 @@
         public string Meaning { get; set; } = "";
         public string Example { get; set; } = "";
         public string Description { get; set; } = "";
+        public bool AllreadyAdded { get; set; } = false;
     }
 }

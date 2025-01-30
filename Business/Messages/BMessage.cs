@@ -84,10 +84,11 @@ namespace Business.Messages
                     {
                         case Entities.Enum.MessageAttachments.MessageAttachmentTypeEnum.Vocabulary:
                             var vocabulary = DataBase.Vocabularies.FirstOrDefault(x => x.Word.ToLower().Trim() == attachment.Value && x.UserId == message.SenderUserId);
+                            var alreadyAdded = DataBase.Vocabularies.AsNoTracking().Any(x => x.UserId == form.UserId && x.Word.ToLower().Trim() == attachment.Value);
                             if (vocabulary != null)
-                                temp.Attachments.Add(new RVocabulary() { Description = vocabulary.Description, Example = vocabulary.Example, Meaning = vocabulary.Meaning, Word = vocabulary.Word });
+                                temp.Attachments.Add(new RVocabulary() { AllreadyAdded = alreadyAdded, Description = vocabulary.Description, Example = vocabulary.Example, Meaning = vocabulary.Meaning, Word = vocabulary.Word });
                             else
-                                temp.Attachments.Add(new RVocabulary() { Word = attachment.Value });
+                                temp.Attachments.Add(new RVocabulary() { AllreadyAdded = alreadyAdded, Word = attachment.Value });
                             break;
                         case Entities.Enum.MessageAttachments.MessageAttachmentTypeEnum.Box:
                             break;
