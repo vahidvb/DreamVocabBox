@@ -17,5 +17,6 @@ namespace Entities.ViewModel.Users
         public string Email { get; set; }
         public UserBoxScenarioEnum BoxScenario { get; set; }
         public int Id { get; set; }
+        public int UserId => Id;
     }
 }

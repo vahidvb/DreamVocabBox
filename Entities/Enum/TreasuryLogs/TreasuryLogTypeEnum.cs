@@ -11,6 +11,5 @@ namespace Entities.Enum.TreasuryLogs
         Acquire,
         Show,
         Suggest,
-
     }
 }

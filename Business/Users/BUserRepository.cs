@@ -1,8 +1,10 @@
-﻿using Common.CacheManager;
+﻿using Common;
+using Common.CacheManager;
 using Data;
 using Entities.Enum.Users;
 using Entities.Response.Users;
 using Entities.ViewModel.Users;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Service.Users;
 namespace Business.Users
@@ -27,5 +29,21 @@ namespace Business.Users
             return User;
         }
         public void Remove(int UserId) => CacheManager.Remove($"{PreCacheKey}{UserId}");
+
+        public VMUserMiniInfo? GetIfNotExistDatabase(int UserId)
+        {
+            var res = CacheManager.Get<VMUserMiniInfo>($"{PreCacheKey}{UserId}");
+            if(res != null) return res;
+            else return DataBase.Users.Where(x=> x.Id == UserId).Select(r=>new VMUserMiniInfo()
+            {
+                Avatar = r.Avatar,
+                NickName = r.NickName,
+                BoxScenario = r.BoxScenario,
+                Email = r.Email,
+                Id = UserId,
+                SecurityStamp = r.SecurityStamp.ToString(),
+                UserName = r.UserName,
+            }).FirstOrDefault();
+        }
     }
 }

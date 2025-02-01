@@ -5,6 +5,7 @@ namespace Entities.Model.Treasuries
 {
     public class Treasury : BaseModel<Guid>
     {
+        public int UserId { get; set; }
         public string Name { get; set; } = "";
         public string? Description { get; set; }
         public bool IsPublic { get; set; }
