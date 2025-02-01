@@ -37,7 +37,6 @@ namespace Business.Vocabularies
                 BoxNumber = 1,
                 Description = form.Description,
                 Example = form.Example,
-                IsActive = true,
                 LastChangeDate = DateTime.Now,
                 RegisterDate = DateTime.Now,
                 LastSeenDateTime = DateTime.Now,

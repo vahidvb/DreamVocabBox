@@ -6,14 +6,11 @@
 
         public DateTime? LastChangeDate { get; set; }
 
-        public bool IsActive { get; set; }
-
         public DateTime RegisterDate { get; set; }
 
         public BaseModel()
         {
             RegisterDate = DateTime.Now;
-            IsActive = true;
         }
     }
 }
