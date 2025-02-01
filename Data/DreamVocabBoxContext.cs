@@ -2,6 +2,8 @@
 using Entities.Model.Friendships;
 using Entities.Model.MessageAttachments;
 using Entities.Model.Messages;
+using Entities.Model.Treasuries;
+using Entities.Model.TreasuryLogs;
 using Entities.Model.Users;
 using Entities.Model.Vocabularies;
 using Entities.Model.VocabularyChecks;
@@ -26,16 +28,34 @@ namespace Data
         public DbSet<Friendship> Friendships { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<MessageAttachment> MessageAttachments { get; set; }
+        public DbSet<Treasury> Treasuries { get; set; }
+        public DbSet<TreasuryWord> TreasuryWords { get; set; }
+        public DbSet<TreasuryLog> TreasuryLogs { get; set; }
 
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Message>()
-                    .HasMany(m => m.MessageAttachments) 
-                    .WithOne(a => a.Message)            
-                    .HasForeignKey(a => a.MessageId)    
-                    .OnDelete(DeleteBehavior.Cascade); 
+                    .HasMany(m => m.MessageAttachments)
+                    .WithOne(a => a.Message)
+                    .HasForeignKey(a => a.MessageId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Treasury>()
+                    .HasMany(m => m.TreasuryLogs)
+                    .WithOne(a => a.Treasury)
+                    .HasForeignKey(a => a.TreasuryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Treasury>()
+                    .HasMany(m => m.TreasuryWords)
+                    .WithOne(a => a.Treasury)
+                    .HasForeignKey(a => a.TreasuryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+
+
             base.OnModelCreating(modelBuilder);
 
 
