@@ -6,6 +6,7 @@ namespace Entities.Response.Users
     {
         public int FriendshipPending { get; set; }
         public int MessagesUnread { get; set; }
+        public int AllVocabularyCount { get; set; }
         public List<RUserBoxScenario> Scenarios { get; set; }
     }
 }

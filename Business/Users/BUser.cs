@@ -342,6 +342,8 @@ namespace Business.Users
             res.FriendshipPending = friendshipPending;
             var messagesUnread = await DataBase.Messages.AsNoTracking().CountAsync(f => f.ReceiverUserId == UserId && f.ReadAt == null);
             res.MessagesUnread = messagesUnread;
+            var allVocabularyCount = await DataBase.Vocabularies.AsNoTracking().CountAsync(f => f.UserId == UserId);
+            res.AllVocabularyCount = allVocabularyCount;
             res.Scenarios = await GetScenarios();
             return res;
         }

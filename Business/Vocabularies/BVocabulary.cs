@@ -68,6 +68,7 @@ namespace Business.Vocabularies
             vocabulary.Meaning = form.Meaning;
             vocabulary.Description = form.Description;
             vocabulary.Example = form.Example;
+            vocabulary.LastEditDateTime = DateTime.Now;
 
             DataBase.Vocabularies.Update(vocabulary);
             await DataBase.SaveChangesAsync();
@@ -148,7 +149,7 @@ namespace Business.Vocabularies
 
             var vocabularies = await DataBase.Vocabularies
                 .Where(x => x.UserId == form.UserId && (string.IsNullOrEmpty(form.SearchText) || x.Word.ToLower().Trim().StartsWith(form.SearchText.Trim().ToLower())) && (form.BoxNumber == 0 || x.BoxNumber == form.BoxNumber))
-                .OrderBy(x => x.LastSeenDateTime)
+                .OrderByDescending(x => x.LastEditDateTime).ThenByDescending(x => x.RegisterDate)
                 .Skip(form.ListPosition)
                 .Take(form.ListLength)
                 .ToListAsync();

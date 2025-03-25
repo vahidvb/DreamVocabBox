@@ -9,6 +9,7 @@
         public string? Description { get; set; }
         public int SeenCount { get; set; }
         public DateTime LastSeenDateTime { get; set; }
+        public DateTime? LastEditDateTime { get; set; }
         public int BoxNumber { get; set; }
     }
 }
