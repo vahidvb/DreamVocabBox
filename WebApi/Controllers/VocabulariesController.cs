@@ -1,4 +1,5 @@
 ﻿using Common.Api;
+using Common.Extensions;
 using Entities.Form.Vocabularies;
 using Entities.Model.Vocabularies;
 using Entities.Response.Vocabularies;
@@ -13,6 +14,11 @@ namespace WebApi.Controllers
     [ApiController]
     public class VocabulariesController(IVocabularyService service) : BaseController<IVocabularyService>(service)
     {
+        [HttpPost]
+        public async Task<ApiResult<bool>> CheckVocabulary([FromBody] string text)
+        {
+            return new ApiResult<bool>(await service.CheckVocabulary(text, CurrentUser.Id));
+        }
         [HttpPost]
         public async Task<ApiResult> RemoveVocabulary([FromBody] string VocabularyId)
         {

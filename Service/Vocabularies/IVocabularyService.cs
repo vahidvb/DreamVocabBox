@@ -1,4 +1,5 @@
-﻿using Entities.Form.Vocabularies;
+﻿using Common.Extensions;
+using Entities.Form.Vocabularies;
 using Entities.Model.Vocabularies;
 using Entities.Response.Vocabularies;
 
@@ -13,5 +14,6 @@ namespace Service.Vocabularies
         Task AddVocabulary(FAddEditVocabulary form);
         Task EditVocabulary(FAddEditVocabulary form);
         Task RemoveVocabulary(FRemoveVocabulary form);
+        Task<bool> CheckVocabulary(string text, int userId);
     }
 }

@@ -21,7 +21,12 @@ namespace Business.Vocabularies
         public BVocabulary(DreamVocabBoxContext db, IConfiguration configuration, IUserRepositoryService userRepositoryService) : base(db, configuration, userRepositoryService)
         {
         }
-
+        public async Task<bool> CheckVocabulary(string text,int userId)
+        {
+            text = text.ToLowerTrim();
+            var exist = await DataBase.Vocabularies.AnyAsync(x => x.UserId == userId && x.Word.ToLower() == text);
+            return exist;
+        }
         public async Task AddVocabulary(FAddEditVocabulary form)
         {
             form.Word.ToLowerTrim();
@@ -32,11 +37,11 @@ namespace Business.Vocabularies
             var info = new Vocabulary()
             {
                 Word = form.Word,
-                Meaning = form.Meaning,
+                Meaning = form.Meaning.Trim(),
                 UserId = form.UserId,
                 BoxNumber = 1,
-                Description = form.Description,
-                Example = form.Example,
+                Description = form.Description?.Trim(),
+                Example = form.Example?.Trim(),
                 LastChangeDate = DateTime.Now,
                 RegisterDate = DateTime.Now,
                 LastSeenDateTime = DateTime.Now,
@@ -65,9 +70,9 @@ namespace Business.Vocabularies
             if (vocabulary.UserId != form.UserId)
                 throw new AppException(ApiResultStatusCode.DontAllowAccessThisResource);
 
-            vocabulary.Meaning = form.Meaning;
-            vocabulary.Description = form.Description;
-            vocabulary.Example = form.Example;
+            vocabulary.Meaning = form.Meaning.Trim();
+            vocabulary.Description = form.Description?.Trim();
+            vocabulary.Example = form.Example?.Trim();
             vocabulary.LastEditDateTime = DateTime.Now;
 
             DataBase.Vocabularies.Update(vocabulary);
@@ -149,7 +154,7 @@ namespace Business.Vocabularies
 
             var vocabularies = await DataBase.Vocabularies
                 .Where(x => x.UserId == form.UserId && (string.IsNullOrEmpty(form.SearchText) || x.Word.ToLower().Trim().StartsWith(form.SearchText.Trim().ToLower())) && (form.BoxNumber == 0 || x.BoxNumber == form.BoxNumber))
-                .OrderByDescending(x => x.LastEditDateTime).ThenByDescending(x => x.RegisterDate)
+                .OrderByDescending(x => x.LastEditDateTime.HasValue ? x.LastEditDateTime : x.RegisterDate)
                 .Skip(form.ListPosition)
                 .Take(form.ListLength)
                 .ToListAsync();
